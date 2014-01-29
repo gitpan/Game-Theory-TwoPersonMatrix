@@ -1,5 +1,10 @@
 Revision history for Game-Theory-TwoPersonMatrix
 
+0.0101 2014-01-29
+    - Improved documentation
+    - Tested negative payoffs
+
 0.01  2014-01-28
-    - Moved functionality from script subs to module methods.
+    - Docuented the thing!
+    - Moved functionality from script subs to module methods
     - Minted by Dist::Zilla

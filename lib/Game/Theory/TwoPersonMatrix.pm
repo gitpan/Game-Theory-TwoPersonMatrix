@@ -5,7 +5,7 @@ BEGIN {
 
 # ABSTRACT: Reduce & analyze a 2 person matrix game
 
-our $VERSION = '0.01';
+our $VERSION = '0.0101';
 
 use strict;
 use warnings;
@@ -142,7 +142,7 @@ sub nash {
         my $eutil = each_array(@{$x{$xs}}, @{$y{$ys}});
         while ( my ( $i, $j ) = $eutil->() ) {
             # Are the best strategies for both players on the same coordinate?
-            if ( $i == $j ) {
+            if ( defined $i && defined $j && $i == $j ) {
                 #warn "$xs,$ys: $i == $j\n";
 
                 # Save the strategy coordinate and utilities.
@@ -168,7 +168,7 @@ Game::Theory::TwoPersonMatrix - Reduce & analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.01
+version 0.0101
 
 =head1 SYNOPSIS
 
@@ -190,6 +190,26 @@ of player names, strategies and numerical utilities.
 The players must have the same number of strategies, and each strategy must have
 the same size utility vectors as all the others.
 
+Player strategies are given by a 2D matrix of utilities (or payoffs) such that,
+
+  [ [ u1, u2 .. un] .. [ v1, v2 .. vn ] ]
+
+Where each "B<u>i" is a utility or payoff for the strategy "B<U>."
+
+Player 1 and 2 are the "row" and "column" players, respectively.  This is due to
+the tabular format of a matrix game:
+
+                  Player 2
+                  --------
+         Strategy  1    2
+ Player |    1    1,0  1,3
+    1   |    3    0,2  2,4
+
+The same game in "linear form" is:
+
+ P1: { 1: [1,1], 3: [0,2] }
+ P2: { 1: [0,2], 2: [3,4] }
+
 =head1 NAME
 
 Game::Theory::TwoPersonMatrix - Reduce & analyze a 2 person matrix game
@@ -204,14 +224,8 @@ Create a new C<Game::Theory::TwoPersonMatrix> object.
 
 Player defaults:
 
-  1 => { 1 => [1,0], 2 => [0,1] },
-  2 => { 1 => [1,0], 2 => [0,1] }
-
-Player strategies are given by a 2D matrix of utilities (or payoffs) such that,
-
-  [ [ u1, u2 .. un] .. [ v1, v2 .. vn ] ]
-
-Where each "B<u>i" is a utility or payoff for the strategy "B<U>."
+  1 => { 1 => [1,0], 2 => [0,1] }, # The "row player"
+  2 => { 1 => [1,0], 2 => [0,1] }  # The "column player"
 
 =head2 reduce()
 

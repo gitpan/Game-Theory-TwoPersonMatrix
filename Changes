@@ -1,10 +1,14 @@
 Revision history for Game-Theory-TwoPersonMatrix
 
+0.02  2014-02-02
+    - Implemented optimal stategy equation computation via probabilities over
+      opponent combined strategic utilities.
+
 0.0101 2014-01-29
     - Improved documentation
-    - Tested negative payoffs
+    - Added tests for negative utilities
 
 0.01  2014-01-28
-    - Docuented the thing!
+    - Documented the thing!
     - Moved functionality from script subs to module methods
     - Minted by Dist::Zilla

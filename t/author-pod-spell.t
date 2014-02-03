@@ -20,6 +20,7 @@ all_pod_files_spelling_ok( qw( bin lib  ) );
 __DATA__
 equilibria
 ui
+bimatrix
 Gene
 Boggs
 gene

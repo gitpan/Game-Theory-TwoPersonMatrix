@@ -5,7 +5,7 @@ BEGIN {
 
 # ABSTRACT: Reduce & analyze a 2 person matrix game
 
-our $VERSION = '0.02';
+our $VERSION = '0.0201';
 
 use strict;
 use warnings;
@@ -256,7 +256,7 @@ Game::Theory::TwoPersonMatrix - Reduce & analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.02
+version 0.0201
 
 =head1 SYNOPSIS
 
@@ -300,8 +300,10 @@ The same game in "linear form" is:
  P1: { 1: [1,1], 3: [0,2] }
  P2: { 1: [0,2], 2: [3,4] }
 
-For a description of player probability profiles, please see the relevant
-literature.
+In "bimatrix" form, the game is:
+
+      | 1 1 |       | 0 2 |
+ P1 = | 0 2 |  P2 = | 3 4 |
 
 =head1 NAME
 
@@ -348,13 +350,38 @@ Find the Nash equilibria.
   my $p = $g->payoff;
   print Dumper $p;
 
-      | 0 3 0 |      | 3 0 0 |
-  A = | 2 1 3 |  B = | 1 2 3 |
+Example:
 
-  PA = 0*p1*q1 + 3*p1*q2 + 0*p1*q3
-     + 2*p2*q1 + 1*p2*q2 + 3*p1*q3
-  PB = 3*p1*q1 + 0*p1*q2 ...
-     + 1*p2*q1 + 2*p2*q2
+      | 0 3 |      | 3 0 |
+  A = | 2 1 |  B = | 1 2 |
+
+Where B<A> is the "row player" and B<B> is the "column player."
+
+The payoff probabilities for their mixed strategies are,
+
+  PA = 0*p1*q1 + 3*p1*q2 + 2*p2*q1 + 1*p2*q2
+  PB = 3*p1*q1 + 0*p1*q2 + 1*p2*q1 + 2*p2*q2
+
+Through substitution, simplification and differentiation, these equations become,
+
+  PA = 3*(1 - q) - 2*q - 1*(1 - q)
+  PB = 3*p + 1 - p - 2*(1 - p)
+
+Which can be further simplified (by hand), set to equal zero and solved (by
+hand) for B<p> (and B<q>), to find the optimum probabilities for each
+strategy when playing "mixed strategies."
+
+For a description of mixed strategies and deriving probability profiles, please
+see the relevant literature.
+
+=head1 TO DO
+
+Find or make an algebraic solver...
+
+=head1 SEE ALSO
+
+The game theory sections and exercises of "Games and Decision Making"
+L<http://www.amazon.com/Games-Decision-Making-Charalambos-Aliprantis/dp/019530022X/>
 
 =head1 AUTHOR
 

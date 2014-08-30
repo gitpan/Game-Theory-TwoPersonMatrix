@@ -8,13 +8,11 @@ BEGIN {
 use strict;
 use warnings;
 
-our $VERSION = '0.0202';
+our $VERSION = '0.03';
 
-use Data::Dumper;
 use Algorithm::Combinatorics qw( variations_with_repetition );
 use List::Util qw( max );
 use List::MoreUtils qw( all indexes each_array );
-use Math::Calculus::Differentiate;
 
 
 
@@ -170,77 +168,6 @@ sub nash {
     return $nash;
 }
 
-
-sub mixed {
-    my $self = shift;
-
-    my @mixed;
-
-    for my $player (sort keys %$self) {
-        my @equation;
-        my @pinverse;
-        my @qinverse;
-
-        # Compute the payoff equation components.
-        for my $strat (sort keys %{ $self->{$player}{strategy} }) {
-            my $pinverse = '(1';
-            my $qinverse = '(1';
-            my $i = 0;
-            for my $util (@{ $self->{$player}{strategy}{$strat} }) {
-                $i++;
-                push @equation, "$util*p$strat*q$i";
-                $pinverse .= ' - p' . $i if $i <= $strat;
-                $qinverse .= ' - q' . $i if $i <= $strat;
-            }
-            $pinverse .= ')';
-            $qinverse .= ')';
-            push @pinverse, $pinverse;
-            push @qinverse, $qinverse;
-        }
-#warn "Player $player mixed: ", join(' + ', @equation), "\n\n";
-
-        # The last is unused. TODO Fix this with a correct condition, above.
-        pop @pinverse;
-        pop @qinverse;
-
-        # Substitute all the non-initial vars with (1 - ...
-        my $i = @pinverse + 1;
-        for my $inv (reverse @pinverse) {
-            @equation = grep { /p$i/ ? s/p$i/$inv/ : $_ } @equation;
-            $i--;
-        }
-        $i = @qinverse + 1;
-        for my $inv (reverse @qinverse) {
-            @equation = grep { /q$i/ ? s/q$i/$inv/ : $_ } @equation;
-            $i--;
-        }
-
-        # Remove the 1-suffix from the equation.
-        @equation = grep { /p1/ ? s/p1/p/g : $_ } @equation;
-        @equation = grep { /q1/ ? s/q1/q/g : $_ } @equation;
-
-        # 
-        my $mixed = join ' + ', @equation;
-
-        # Create the expression.
-        my $exp = Math::Calculus::Differentiate->new;
-        $exp->addVariable('p');
-        $exp->addVariable('q');
-        $exp->setExpression($mixed) or die $exp->getError;
-        $exp->simplify or die $exp->getError;
-#warn "E: ",$exp->getExpression, "\n";
-        $exp->differentiate( $player eq 1 ? 'p' : 'q' ) or die $exp->getError;
-        $exp->simplify or die $exp->getError;
-#warn "D: ",$exp->getExpression, "\n";
-
-        # Set the player payoff strategy equation.
-        $self->{$player}{mixed} = $exp->getExpression;
-        push @mixed, $exp->getExpression;
-    }
-
-    return \@mixed;
-}
-
 1;
 
 __END__
@@ -255,7 +182,7 @@ Game::Theory::TwoPersonMatrix - Reduce & analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.0202
+version 0.03
 
 =head1 SYNOPSIS
 
@@ -266,8 +193,6 @@ version 0.0202
   );
   $g->reduce(2, 1);
   $g->reduce(1, 2);
-  my $m = $g->mixed;
-  print Dumper $m;
   my $n = $g->nash;
   print Dumper $n;
 
@@ -304,10 +229,6 @@ In "bimatrix" form, the game is:
       | 1 1 |       | 0 2 |
  P1 = | 0 2 |  P2 = | 3 4 |
 
-=head1 NAME
-
-Game::Theory::TwoPersonMatrix - Reduce & analyze a 2 person matrix game
-
 =head1 METHODS
 
 =head2 new()
@@ -341,42 +262,11 @@ insoluble.
 
 Find the Nash equilibria.
 
-=head2 mixed()
-
-  my $p = $g->mixed;
-  print Dumper $p;
-
-Example:
-
-      | 0 3 |      | 3 0 |
-  A = | 2 1 |  B = | 1 2 |
-
-Where B<A> is the "row player" and B<B> is the "column player."
-
-The payoff probabilities for their mixed strategies are,
-
-  PA = 0*p1*q1 + 3*p1*q2 + 2*p2*q1 + 1*p2*q2
-  PB = 3*p1*q1 + 0*p1*q2 + 1*p2*q1 + 2*p2*q2
-
-Through substitution, simplification and differentiation, these equations become,
-
-  PA' = 3*(1 - q) - 2*q - 1*(1 - q)
-  PB' = 3*p + 1 - p - 2*(1 - p)
-
-Which can be further simplified (by hand) to,
-
-  PA' = -4*p + 2
-  PB' = 4*p - 1
-
-When set equal to zero and solved (by hand) for B<p> (and B<q>), to find the
-optimum probabilities for each strategy when playing "mixed strategies."
-
-For a description of mixed strategies and deriving probability profiles, please
-see the relevant literature.
-
 =head1 TO DO
 
 Find or make an algebraic solver...
+
+Figure out how to re-enable mixed().
 
 =head1 SEE ALSO
 

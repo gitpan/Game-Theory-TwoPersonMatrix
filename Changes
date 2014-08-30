@@ -1,8 +1,8 @@
 Revision history for Game-Theory-TwoPersonMatrix
 
-0.0202 2014-02-03
+0.03  2014-08-30
     - Improved documentation.
-    - Renamed payoff() to mixed().
+    - Removed the broken dependency on the missing Math::Calculus::Expression module.
 
 0.0201 2014-02-02
     - Enhanced documentation!

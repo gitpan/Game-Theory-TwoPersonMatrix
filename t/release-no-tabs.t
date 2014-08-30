@@ -9,13 +9,20 @@ BEGIN {
 use strict;
 use warnings;
 
-# this test was generated with Dist::Zilla::Plugin::NoTabsTests 0.06
+# this test was generated with Dist::Zilla::Plugin::NoTabsTests 0.09
 
 use Test::More 0.88;
 use Test::NoTabs;
 
 my @files = (
-    'lib/Game/Theory/TwoPersonMatrix.pm'
+    'lib/Game/Theory/TwoPersonMatrix.pm',
+    't/00-compile.t',
+    't/00-load.t',
+    't/01-methods.t',
+    't/author-pod-spell.t',
+    't/release-no-tabs.t',
+    't/release-pod-coverage.t',
+    't/release-pod-syntax.t'
 );
 
 notabs_ok($_) foreach @files;

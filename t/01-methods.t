@@ -35,7 +35,4 @@ $g = Game::Theory::TwoPersonMatrix->new(
 );
 isa_ok $g, 'Game::Theory::TwoPersonMatrix';
 
-is $g->mixed->[0], '3*(1 - q) - 2*q - 1*(1 - q)', 'player 1 mixed';
-is $g->mixed->[1], '3*p + 1 - p - 2*(1 - p)', 'player 2 mixed';
-
 done_testing();

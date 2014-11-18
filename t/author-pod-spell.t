@@ -21,6 +21,7 @@ __DATA__
 equilibria
 ui
 bimatrix
+metacpan
 Gene
 Boggs
 gene

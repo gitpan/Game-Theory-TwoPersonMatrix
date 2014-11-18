@@ -4,7 +4,7 @@
       "Gene Boggs <gene@cpan.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 5.020, CPAN::Meta::Converter version 2.141520",
+   "generated_by" : "Dist::Zilla version 5.020, CPAN::Meta::Converter version 2.142060",
    "license" : [
       "perl_5"
    ],
@@ -34,6 +34,7 @@
             "Algorithm::Combinatorics" : "0",
             "List::MoreUtils" : "0",
             "List::Util" : "0",
+            "Math::Calculus::Differentiate" : "0",
             "perl" : "5.006",
             "strict" : "0",
             "warnings" : "0"
@@ -61,7 +62,7 @@
          "web" : "https://github.com/ology/game-theory-twopersonmatrix"
       }
    },
-   "version" : "0.03",
+   "version" : "0.04",
    "x_Dist_Zilla" : {
       "perl" : {
          "version" : "5.021002"

@@ -8,7 +8,7 @@ BEGIN {
 use strict;
 use warnings;
 
-our $VERSION = '0.04';
+our $VERSION = '0.0401';
 
 use Algorithm::Combinatorics qw( variations_with_repetition );
 use List::Util qw( max );
@@ -254,7 +254,7 @@ Game::Theory::TwoPersonMatrix - Reduce & analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.04
+version 0.0401
 
 =head1 SYNOPSIS
 
@@ -377,8 +377,6 @@ see the relevant literature.
 =head1 TO DO
 
 Find or make an algebraic solver...
-
-Add tests for mixed()
 
 =head1 SEE ALSO
 

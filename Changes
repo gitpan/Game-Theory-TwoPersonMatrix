@@ -1,5 +1,8 @@
 Revision history for Game-Theory-TwoPersonMatrix
 
+0.0401 2014-11-18
+    - Added tests for mixed().
+
 0.04  2014-11-18
     - Re-added mixed() and Math::Calculus::* deps.
 

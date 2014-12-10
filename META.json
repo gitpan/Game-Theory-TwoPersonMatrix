@@ -63,7 +63,7 @@
          "web" : "https://github.com/ology/game-theory-twopersonmatrix"
       }
    },
-   "version" : "0.05",
+   "version" : "0.0501",
    "x_Dist_Zilla" : {
       "perl" : {
          "version" : "5.018001"

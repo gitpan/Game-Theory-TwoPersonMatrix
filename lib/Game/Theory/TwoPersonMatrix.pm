@@ -6,7 +6,7 @@ our $AUTHORITY = 'cpan:GENE';
 use strict;
 use warnings;
 
-our $VERSION = '0.05';
+our $VERSION = '0.0501';
 
 use Algorithm::Combinatorics qw( variations_with_repetition );
 use List::Util qw( max );
@@ -293,7 +293,7 @@ Game::Theory::TwoPersonMatrix - Reduce & analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.05
+version 0.0501
 
 =head1 SYNOPSIS
 
@@ -353,7 +353,12 @@ In "bimatrix" form, the game is:
 
 =head2 new()
 
-  my $g = Game::Theory::TwoPersonMatrix->new(%args);
+  $g = Game::Theory::TwoPersonMatrix->new();
+  $g = Game::Theory::TwoPersonMatrix->new(%args);
+  $g = Game::Theory::TwoPersonMatrix->new(
+    1 => { strategy => { 1 => [1,1,3], 2 => [0,0,3], 3 => [0,2,5] }, choice => { 1 => 0.2, 2 => 0.3, 3 => 0.5}, },
+    2 => { strategy => { 1 => [0,2,2], 2 => [3,1,4], 3 => [0,0,3] }, choice => { 1 => 0.2, 2 => 0.3, 3 => 0.5}, },
+  );
 
 Create a new C<Game::Theory::TwoPersonMatrix> object.
 
@@ -361,6 +366,9 @@ Player defaults:
 
   1 => { 1 => [1,0], 2 => [0,1] }, # The "row player"
   2 => { 1 => [1,0], 2 => [0,1] }  # The "column player"
+
+If not provided, the strategic choices are computed equally from the number of
+strategies.
 
 =head2 player_strategy()
 

@@ -1,7 +1,9 @@
 Revision history for Game-Theory-TwoPersonMatrix
 
-0.0401 2014-11-18
+0.05  2014-12-10
     - Added tests for mixed().
+    - Added the player_strategy() method, tests and docs.
+    - Added expected_value()
 
 0.04  2014-11-18
     - Re-added mixed() and Math::Calculus::* deps.

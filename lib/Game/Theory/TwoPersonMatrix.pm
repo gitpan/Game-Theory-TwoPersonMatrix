@@ -1,14 +1,12 @@
 package Game::Theory::TwoPersonMatrix;
-BEGIN {
-  $Game::Theory::TwoPersonMatrix::AUTHORITY = 'cpan:GENE';
-}
+our $AUTHORITY = 'cpan:GENE';
 
 # ABSTRACT: Reduce & analyze a 2 person matrix game
 
 use strict;
 use warnings;
 
-our $VERSION = '0.0401';
+our $VERSION = '0.05';
 
 use Algorithm::Combinatorics qw( variations_with_repetition );
 use List::Util qw( max );
@@ -23,13 +21,13 @@ sub new {
     my $self = {
         1 => $args{1} || {
             strategy => { 1 => [1,0], 2 => [0,1] },
+            play     => {},
             mixed    => undef,
-            payoff   => undef,
         },
         2 => $args{2} || {
             strategy => { 1 => [1,0], 2 => [0,1] },
+            play     => {},
             mixed    => undef,
-            payoff   => undef,
         },
     };
     bless $self, $class;
@@ -39,7 +37,48 @@ sub new {
 
 sub _init {
     my $self = shift;
-#    my ($player, $opponent) = ($self->{1}{strategy}, $self->{2}{strategy});
+    my ( $player, $opponent ) = ( $self->{1}, $self->{2} );
+
+    for my $p ( keys %{ $player->{strategy} } )
+    {
+        $player->{choice}{$p} ||= 1 / keys( %{ $player->{strategy} } );
+    }
+    for my $p ( keys %{ $opponent->{strategy} } )
+    {
+        $opponent->{choice}{$p} ||= 1 / keys( %{ $opponent->{strategy} } );
+    }
+
+}
+
+
+sub player_strategy
+{
+    my ( $self, $player ) = @_;
+    return $self->{$player}{strategy};
+}
+
+
+
+sub player_choice
+{
+    my ( $self, $player ) = @_;
+    return $self->{$player}{choice};
+}
+
+
+sub expected_value
+{
+    my ( $self, $player ) = @_;
+    my $expected_value = 0;
+    for my $strategy ( keys %{ $self->{$player}{strategy} } )
+    {
+        my $choice = $self->{$player}{choice}{$strategy};
+        for my $utility ( @{ $self->{$player}{strategy}{$strategy} } )
+        {
+            $expected_value += $choice * $utility;
+        }
+    }
+    return $expected_value;
 }
 
 
@@ -254,17 +293,19 @@ Game::Theory::TwoPersonMatrix - Reduce & analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.0401
+version 0.05
 
 =head1 SYNOPSIS
 
   use Game::Theory::TwoPersonMatrix;
   my $g = Game::Theory::TwoPersonMatrix->new(
-    1 => { strategy => { 1 => \@s1, 2 => \@s2, } },
-    2 => { strategy => { 1 => \@t1, 2 => \@t2, } },
+    1 => { strategy => { 1 => \@u11, 2 => \@u12, } },
+    2 => { strategy => { 1 => \@u21, 2 => \@u22, } },
   );
-  $g->reduce(2, 1);
-  $g->reduce(1, 2);
+  $g->player_strategy(1);
+  $g->player_strategy(2);
+  $g->reduce(2, 1); # Player 2 given player 1
+  $g->reduce(1, 2); # Player 1 given player 2
   my $m = $g->mixed;
   print Dumper $m;
   my $n = $g->nash;
@@ -320,6 +361,18 @@ Player defaults:
 
   1 => { 1 => [1,0], 2 => [0,1] }, # The "row player"
   2 => { 1 => [1,0], 2 => [0,1] }  # The "column player"
+
+=head2 player_strategy()
+
+Return the given player's strategy.
+
+=head2 player_choice()
+
+Return the given player's strategic choice value.
+
+=head2 expected_value()
+
+Return a player's expected payoff value for the entire game.
 
 =head2 reduce()
 

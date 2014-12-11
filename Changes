@@ -1,7 +1,7 @@
 Revision history for Game-Theory-TwoPersonMatrix
 
-0.0501 2014-12-10
-    - Improved documentation.
+0.06  2014-12-10
+    - Stripped down everything and starting over...
 
 0.05  2014-12-10
     - Added tests for mixed().

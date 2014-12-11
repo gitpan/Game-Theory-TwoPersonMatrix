@@ -1,14 +1,12 @@
 package Game::Theory::TwoPersonMatrix;
-BEGIN {
-  $Game::Theory::TwoPersonMatrix::AUTHORITY = 'cpan:GENE';
-}
+our $AUTHORITY = 'cpan:GENE';
 
 # ABSTRACT: Analyze a 2 person matrix game
 
 use strict;
 use warnings;
 
-our $VERSION = '0.07';
+our $VERSION = '0.0701';
 
 
 
@@ -44,6 +42,28 @@ sub expected_value
     return $expected_value;
 }
 
+
+sub s_expected_value
+{
+    my ($self) = @_;
+
+    my $expected_value = '';
+    # For each strategy of player 1...
+    for my $i ( sort { $a <=> $b } keys %{ $self->{1} } )
+    {
+        # For each strategy of player 2...
+        for my $j ( sort { $a <=> $b } keys %{ $self->{2} } )
+        {
+            # Expected value is the sum of the probabilities of each payoff
+            $expected_value .= " + $self->{1}{$i} * $self->{2}{$j} * $self->{payoff}[$i - 1][$j - 1]";
+        }
+    }
+
+    $expected_value =~ s/^ \+ (.+)$/$1/g;
+
+    return $expected_value;
+}
+
 1;
 
 __END__
@@ -58,7 +78,7 @@ Game::Theory::TwoPersonMatrix - Analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.07
+version 0.0701
 
 =head1 SYNOPSIS
 
@@ -102,6 +122,16 @@ Create a new C<Game::Theory::TwoPersonMatrix> object.
 =head2 expected_value()
 
 Return the expected payoff value.
+
+=head2 s_expected_value()
+
+ $g = Game::Theory::TwoPersonMatrix->new(
+    1 => { 1 => 'p', 2 => '1 - p' },
+    2 => { 1 => 'q', 2 => '1 - q' },
+    payoff => [ ['a','b'], ['c','d'] ]
+ );
+
+Return the expected payoff expression for a non-numeric game.
 
 =head1 SEE ALSO
 

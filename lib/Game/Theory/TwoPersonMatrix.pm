@@ -1,12 +1,17 @@
 package Game::Theory::TwoPersonMatrix;
-our $AUTHORITY = 'cpan:GENE';
+BEGIN {
+  $Game::Theory::TwoPersonMatrix::AUTHORITY = 'cpan:GENE';
+}
 
 # ABSTRACT: Analyze a 2 person matrix game
 
 use strict;
 use warnings;
 
-our $VERSION = '0.0701';
+use Algorithm::Combinatorics qw( permutations );
+use List::MoreUtils qw( zip );
+
+our $VERSION = '0.08';
 
 
 
@@ -23,31 +28,11 @@ sub new {
 }
 
 
-sub expected_value
+sub expected_payoff
 {
     my ($self) = @_;
 
-    my $expected_value = 0;
-    # For each strategy of player 1...
-    for my $i ( keys %{ $self->{1} } )
-    {
-        # For each strategy of player 2...
-        for my $j ( keys %{ $self->{2} } )
-        {
-            # Expected value is the sum of the probabilities of each payoff
-            $expected_value += $self->{1}{$i} * $self->{2}{$j} * $self->{payoff}[$i - 1][$j - 1];
-        }
-    }
-
-    return $expected_value;
-}
-
-
-sub s_expected_value
-{
-    my ($self) = @_;
-
-    my $expected_value = '';
+    my $expected_payoff = 0;
     # For each strategy of player 1...
     for my $i ( sort { $a <=> $b } keys %{ $self->{1} } )
     {
@@ -55,13 +40,63 @@ sub s_expected_value
         for my $j ( sort { $a <=> $b } keys %{ $self->{2} } )
         {
             # Expected value is the sum of the probabilities of each payoff
-            $expected_value .= " + $self->{1}{$i} * $self->{2}{$j} * $self->{payoff}[$i - 1][$j - 1]";
+            $expected_payoff += $self->{1}{$i} * $self->{2}{$j} * $self->{payoff}[$i - 1][$j - 1];
         }
     }
 
-    $expected_value =~ s/^ \+ (.+)$/$1/g;
+    return $expected_payoff;
+}
 
-    return $expected_value;
+
+sub s_expected_payoff
+{
+    my ($self) = @_;
+
+    my $expected_payoff = '';
+    # For each strategy of player 1...
+    for my $i ( sort { $a <=> $b } keys %{ $self->{1} } )
+    {
+        # For each strategy of player 2...
+        for my $j ( sort { $a <=> $b } keys %{ $self->{2} } )
+        {
+            # Expected value is the sum of the probabilities of each payoff
+            $expected_payoff .= " + $self->{1}{$i} * $self->{2}{$j} * $self->{payoff}[$i - 1][$j - 1]";
+        }
+    }
+
+    $expected_payoff =~ s/^ \+ (.+)$/$1/g;
+
+    return $expected_payoff;
+}
+
+
+sub counter_strategy
+{
+    my ( $self, $player ) = @_;
+
+    my $counter_strategy = [];
+    my %seen;
+
+    my $opponent = $player == 1 ? 2 : 1;
+
+    my @keys = 1 .. keys %{ $self->{$player} };
+    my @pure = ( 1, (0) x ( keys( %{ $self->{$player} } ) - 1 ) );
+
+    my $i = permutations( \@pure );
+    while ( my $x = $i->next )
+    {
+        next if $seen{"@$x"}++;
+
+        my $g = Game::Theory::TwoPersonMatrix->new(
+            $player   => { zip @keys, @$x },
+            $opponent => $self->{$opponent},
+            payoff    => $self->{payoff},
+        );
+
+        push @$counter_strategy, $g->expected_payoff();
+    }
+
+    return $counter_strategy;
 }
 
 1;
@@ -78,7 +113,7 @@ Game::Theory::TwoPersonMatrix - Analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.0701
+version 0.08
 
 =head1 SYNOPSIS
 
@@ -119,11 +154,11 @@ pennies."
 
 Create a new C<Game::Theory::TwoPersonMatrix> object.
 
-=head2 expected_value()
+=head2 expected_payoff()
 
 Return the expected payoff value.
 
-=head2 s_expected_value()
+=head2 s_expected_payoff()
 
  $g = Game::Theory::TwoPersonMatrix->new(
     1 => { 1 => 'p', 2 => '1 - p' },
@@ -132,6 +167,10 @@ Return the expected payoff value.
  );
 
 Return the expected payoff expression for a non-numeric game.
+
+=head2 counter_strategy()
+
+Return the counter-strategies for a given player.
 
 =head1 SEE ALSO
 

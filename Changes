@@ -1,6 +1,9 @@
 Revision history for Game-Theory-TwoPersonMatrix
 
-0.0701 2014-12-11
+0.08  2014-12-11
+    - Implemented counter_strategy()
+
+0.07  2014-12-10
     - Correctly enabled expected_value()
     - Added tests from the cited textbook examples
 

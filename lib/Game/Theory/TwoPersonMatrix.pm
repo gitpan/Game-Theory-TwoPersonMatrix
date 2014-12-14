@@ -11,7 +11,7 @@ use warnings;
 use Algorithm::Combinatorics qw( permutations );
 use List::MoreUtils qw( zip );
 
-our $VERSION = '0.08';
+our $VERSION = '0.0801';
 
 
 
@@ -21,7 +21,7 @@ sub new {
     my $self = {
         1 => $args{1} || { 1 => '0.5', 2 => '0.5' },
         2 => $args{2} || { 1 => '0.5', 2 => '0.5' },
-        payoff => $args{payoff} || [ [1,0], [0,1] ],
+        payoff => $args{payoff} || [ [1,-1], [-1,1] ],
     };
     bless $self, $class;
     return $self;
@@ -113,17 +113,26 @@ Game::Theory::TwoPersonMatrix - Analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.08
+version 0.0801
 
 =head1 SYNOPSIS
 
-  use Game::Theory::TwoPersonMatrix;
-  my $g = Game::Theory::TwoPersonMatrix->new();
+ use Game::Theory::TwoPersonMatrix;
+ my $g = Game::Theory::TwoPersonMatrix->new();
+ $g = Game::Theory::TwoPersonMatrix->new(
+    1 => { 1 => 0.2, 2 => 0.3, 3 => 0.5 },
+    2 => { 1 => 0.1, 2 => 0.7, 3 => 0.2 },
+    payoff => [ [ 0, 1,-1],
+                [-1, 0, 1],
+                [ 1,-1, 0] ]
+ };
+ $g->expected_payoff();
+ $g->counter_strategy($player);
 
 =head1 DESCRIPTION
 
 A C<Game::Theory::TwoPersonMatrix> analyzes a two person matrix game
-of player names, strategies and numerical utilities.
+of player names, strategies and utilities.
 
 The players must have the same number of strategies, and each strategy must have
 the same size utility vectors as all the others.
@@ -134,41 +143,48 @@ to the tabular format of a matrix game:
                   Player 2
                   --------
          Strategy 0.5  0.5
- Player |   0.5    1    0  < Payoff
-    1   |   0.5    0    1  <
+ Player |   0.5    1   -1  < Payoff
+    1   |   0.5   -1    1  <
 
-The above is the default - a simple, symmetrical zero-sum game, i.e. "matching
-pennies."
+The above is the default - a symmetrical zero-sum game.
 
 =head1 METHODS
 
 =head2 new()
 
-  $g = Game::Theory::TwoPersonMatrix->new();
-  $g = Game::Theory::TwoPersonMatrix->new(
-        1 => { 1 => '0.5', 2 => '0.5' },
-        2 => { 1 => '0.5', 2 => '0.5' },
-        payoff => [ [1,0],
-                    [0,1] ]
-  );
+ $g = Game::Theory::TwoPersonMatrix->new();
+ $g = Game::Theory::TwoPersonMatrix->new(
+    1 => { 1 => '0.5', 2 => '0.5' },
+    2 => { 1 => '0.5', 2 => '0.5' },
+    payoff => [ [1,0],
+                [0,1] ]
+ );
 
 Create a new C<Game::Theory::TwoPersonMatrix> object.
 
 =head2 expected_payoff()
 
-Return the expected payoff value.
+ $g->expected_payoff();
+
+Return the expected payoff value of the game.
 
 =head2 s_expected_payoff()
 
  $g = Game::Theory::TwoPersonMatrix->new(
-    1 => { 1 => 'p', 2 => '1 - p' },
-    2 => { 1 => 'q', 2 => '1 - q' },
+    1 => { 1 => '(1 - p)', 2 => 'p' },
+    2 => { 1 => 1, 2 => 0 },
     payoff => [ ['a','b'], ['c','d'] ]
  );
+ $g->s_expected_payoff();
 
 Return the expected payoff expression for a non-numeric game.
 
+Using real payoff values, we solve the resulting expression for p in the F<eg/>
+examples.
+
 =head2 counter_strategy()
+
+ $g->counter_strategy($player);
 
 Return the counter-strategies for a given player.
 

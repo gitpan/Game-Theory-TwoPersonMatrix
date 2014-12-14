@@ -1,0 +1,57 @@
+#!/usr/bin/env perl
+#
+# Ch 5
+#
+use Modern::Perl '2012';
+
+use Game::Theory::TwoPersonMatrix;
+use Math::Algebra::Symbols;
+
+my ($q) = symbols(qw(p));
+
+print "Ex 1:\n";
+my $g = Game::Theory::TwoPersonMatrix->new(
+    1 => { 1 => 1, 2 => 0 },
+    2 => { 1 => '(1 - q)', 2 => 'q' },
+    payoff => [ [1,-1], [-1,1] ]
+);
+print 's_expected_payoff: ', $g->s_expected_payoff(), "\n";
+my $c1 = 1 * (1 - $q) * 1 + 1 * $q * -1 + 0 * (1 - $q) * -1 + 0 * $q * 1;
+print 'simplify: ', $c1->simplify, "\n";
+$g = Game::Theory::TwoPersonMatrix->new(
+    1 => { 1 => 0, 2 => 1 },
+    2 => { 1 => '(1 - q)', 2 => 'q' },
+    payoff => [ [1,-1], [-1,1] ]
+);
+print 's_expected_payoff: ', $g->s_expected_payoff(), "\n";
+my $c2 = 0 * (1 - $q) * 1 + 0 * $q * -1 + 1 * (1 - $q) * -1 + 1 * $q * 1;
+print 'simplify: ', $c2->simplify, "\n";
+my $s = $c1 eq $c2;
+my $v = $s->solve($q);
+print 'maximin strategy: ', $v, "\n";
+$s = $c2->sub( p => $v );
+print 'maximin expectation: ', $s, "\n";
+
+print "Ex 2:\n";
+my $g = Game::Theory::TwoPersonMatrix->new(
+    1 => { 1 => 1, 2 => 0 },
+    2 => { 1 => '(1 - q)', 2 => 'q' },
+    payoff => [ [0.8,1], [0.9,0.5] ]
+);
+print 's_expected_payoff: ', $g->s_expected_payoff(), "\n";
+my $c1 = 1 * (1 - $q) * 0.8 + 1 * $q * 1 + 0 * (1 - $q) * 0.9 + 0 * $q * 0.5;
+print 'simplify: ', $c1->simplify, "\n";
+$g = Game::Theory::TwoPersonMatrix->new(
+    1 => { 1 => 0, 2 => 1 },
+    2 => { 1 => '(1 - q)', 2 => 'q' },
+    payoff => [ [0.8,1], [0.9,0.5] ]
+);
+print 's_expected_payoff: ', $g->s_expected_payoff(), "\n";
+my $c2 = 0 * (1 - $q) * 0.8 + 0 * $q * 1 + 1 * (1 - $q) * 0.9 + 1 * $q * 0.5;
+print 'simplify: ', $c2->simplify, "\n";
+my $s = $c1 eq $c2;
+my $v = $s->solve($q);
+print 'maximin strategy: ', $v, "\n";
+$s = $c2->sub( p => $v );
+print 'maximin expectation: ', $s, "\n";
+

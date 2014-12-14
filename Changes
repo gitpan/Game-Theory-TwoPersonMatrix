@@ -1,5 +1,9 @@
 Revision history for Game-Theory-TwoPersonMatrix
 
+0.0801 2014-12-14
+    - Fixed documented examples with crucial parens.
+    - Added minimx and maximin examples in eg/
+
 0.08  2014-12-11
     - Implemented counter_strategy()
 

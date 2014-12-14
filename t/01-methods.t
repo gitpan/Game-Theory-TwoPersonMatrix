@@ -3,7 +3,7 @@ use_ok 'Game::Theory::TwoPersonMatrix';
 
 my $g = Game::Theory::TwoPersonMatrix->new;
 isa_ok $g, 'Game::Theory::TwoPersonMatrix';
-is $g->expected_payoff(), 0.5, 'expected_payoff';
+is $g->expected_payoff(), 0, 'expected_payoff';
 
 $g = Game::Theory::TwoPersonMatrix->new(
     1 => { 1 => '0.2', 2 => '0.8' },

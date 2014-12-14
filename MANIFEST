@@ -8,6 +8,8 @@ Makefile.PL
 README
 README.md
 dist.ini
+eg/maximin
+eg/minimax
 lib/Game/Theory/TwoPersonMatrix.pm
 t/00-compile.t
 t/00-load.t

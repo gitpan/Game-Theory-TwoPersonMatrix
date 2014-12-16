@@ -33,6 +33,7 @@
          "requires" : {
             "Algorithm::Combinatorics" : "0",
             "List::MoreUtils" : "0",
+            "List::Util" : "0",
             "perl" : "5.006",
             "strict" : "0",
             "warnings" : "0"
@@ -60,7 +61,7 @@
          "web" : "https://github.com/ology/game-theory-twopersonmatrix"
       }
    },
-   "version" : "0.0801",
+   "version" : "0.09",
    "x_Dist_Zilla" : {
       "perl" : {
          "version" : "5.021002"

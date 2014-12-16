@@ -1,5 +1,8 @@
 Revision history for Game-Theory-TwoPersonMatrix
 
+0.09  2014-12-15
+    - Implemented saddlepoint computation for strictly domainated games.
+
 0.0801 2014-12-14
     - Fixed documented examples with crucial parens.
     - Added minimx and maximin examples in eg/

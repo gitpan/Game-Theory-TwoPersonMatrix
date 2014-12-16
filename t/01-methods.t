@@ -62,4 +62,20 @@ $g = Game::Theory::TwoPersonMatrix->new(
 isa_ok $g, 'Game::Theory::TwoPersonMatrix', '3x3';
 is_deeply $g->counter_strategy(2), [ 0.2, -0.3, 0.1 ], 'player 2 counter_strategy';
 
+$g = Game::Theory::TwoPersonMatrix->new(
+    payoff => [ [0,-1],
+                [2, 3] ]
+);
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
+is $g->saddlepoint, 2, 'saddlepoint';
+
+$g = Game::Theory::TwoPersonMatrix->new(
+    payoff => [ [ 9,-2,-5],
+                [ 5, 1,-9],
+                [ 3, 2, 5],
+                [-5, 0, 1] ]
+);
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '4x3';
+is $g->saddlepoint, 2, 'saddlepoint';
+
 done_testing();

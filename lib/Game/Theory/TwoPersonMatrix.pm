@@ -8,11 +8,12 @@ BEGIN {
 use strict;
 use warnings;
 
+use Carp;
 use Algorithm::Combinatorics qw( permutations );
 use List::Util qw( max min );
 use List::MoreUtils qw( zip );
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 
 
@@ -108,24 +109,35 @@ sub saddlepoint
     my $saddlepoint;
     my $size = @{ $self->{payoff}[0] } - 1;
 
+    # Look for saddlepoints!
     POINT:
     for my $row ( 0 .. $size )
     {
+        # Get the minimum value of the current row
         my $min = min @{ $self->{payoff}[$row] };
+
+        # Inspect each column given the row
         for my $col ( 0 .. $size )
         {
-            my $v = $self->{payoff}[$row][$col];
-            if ( $v == $min )
+            # Get the payoff
+            my $val = $self->{payoff}[$row][$col];
+
+            # Is the payoff also the row minimum?
+            if ( $val == $min )
             {
+                # Gather the column values for each row
                 my @col;
-                for my $z ( 0 .. $size )
+                for my $r ( 0 .. $size )
                 {
-                    push @col, $self->{payoff}[$z][$col];
+                    push @col, $self->{payoff}[$r][$col];
                 }
+                # Get the maximum value of the columns
                 my $max = max @col;
-                if ( $v == $max )
+
+                # Is the payoff also the column maximum?
+                if ( $val == $max )
                 {
-                    $saddlepoint = $v;
+                    $saddlepoint = $val;
                     last POINT;
                 }
             }
@@ -133,6 +145,43 @@ sub saddlepoint
     }
 
     return $saddlepoint;
+}
+
+
+sub oddments
+{
+    my ($self) = @_;
+
+    my $rsize = @{ $self->{payoff}[0] };
+    my $csize = @{ $self->{payoff} };
+    carp 'Payoff matrix must be 2x2' unless $rsize == 2 && $csize == 2;
+
+    my ( $player, $opponent );
+
+    my ( $x, $y );
+    $x = $self->{payoff}[1][1] - $self->{payoff}[1][0];
+    $y = $self->{payoff}[0][0] - $self->{payoff}[0][1];
+    if ( $x < 0 || $y < 0 )
+    {
+        $x = $self->{payoff}[1][0] - $self->{payoff}[1][1];
+        $y = $self->{payoff}[0][1] - $self->{payoff}[0][0];
+    }
+    my $i = $x / ( $x + $y );
+    my $j = $y / ( $x + $y );
+    $player = [ $i, $j ];
+
+    $x = $self->{payoff}[1][1] - $self->{payoff}[0][1];
+    $y = $self->{payoff}[0][0] - $self->{payoff}[1][0];
+    if ( $x < 0 || $y < 0 )
+    {
+        $x = $self->{payoff}[0][1] - $self->{payoff}[1][1];
+        $y = $self->{payoff}[1][0] - $self->{payoff}[0][0];
+    }
+    $i = $x / ( $x + $y );
+    $j = $y / ( $x + $y );
+    $opponent = [ $i, $j ];
+
+    return [ $player, $opponent ];
 }
 
 1;
@@ -149,7 +198,7 @@ Game::Theory::TwoPersonMatrix - Analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.09
+version 0.10
 
 =head1 SYNOPSIS
 
@@ -231,10 +280,17 @@ Return the counter-strategies for a given player.
 If the game is strictly determined, the saddlepoint is returned.  Otherwise
 C<undef> is returned.
 
+=head2 oddments()
+
+Return each player's "oddments" for a 2x2 game.
+
 =head1 SEE ALSO
 
 "A Gentle Introduction to Game Theory"
+
 L<http://www.amazon.com/Gentle-Introduction-Theory-Mathematical-World/dp/0821813390>
+
+L<http://books.google.com/books?id=8doVBAAAQBAJ>
 
 =head1 AUTHOR
 

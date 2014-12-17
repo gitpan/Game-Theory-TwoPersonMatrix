@@ -19,6 +19,7 @@ meta-spec:
 name: Game-Theory-TwoPersonMatrix
 requires:
   Algorithm::Combinatorics: '0'
+  Carp: '0'
   List::MoreUtils: '0'
   List::Util: '0'
   perl: '5.006'
@@ -27,7 +28,7 @@ requires:
 resources:
   bugtracker: https://rt.cpan.org/Public/Dist/Display.html?Name=Game-Theory-TwoPersonMatrix
   repository: git://github.com/ology/game-theory-twopersonmatrix.git
-version: '0.09'
+version: '0.10'
 x_Dist_Zilla:
   perl:
     version: '5.021002'

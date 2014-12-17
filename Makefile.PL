@@ -21,6 +21,7 @@ my %WriteMakefileArgs = (
   "NAME" => "Game::Theory::TwoPersonMatrix",
   "PREREQ_PM" => {
     "Algorithm::Combinatorics" => 0,
+    "Carp" => 0,
     "List::MoreUtils" => 0,
     "List::Util" => 0,
     "strict" => 0,
@@ -32,7 +33,7 @@ my %WriteMakefileArgs = (
     "IPC::Open3" => 0,
     "Test::More" => 0
   },
-  "VERSION" => "0.09",
+  "VERSION" => "0.10",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -41,6 +42,7 @@ my %WriteMakefileArgs = (
 
 my %FallbackPrereqs = (
   "Algorithm::Combinatorics" => 0,
+  "Carp" => 0,
   "File::Spec" => 0,
   "IO::Handle" => 0,
   "IPC::Open3" => 0,

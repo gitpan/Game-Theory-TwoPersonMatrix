@@ -17,7 +17,6 @@ use Test::NoTabs;
 my @files = (
     'lib/Game/Theory/TwoPersonMatrix.pm',
     't/00-compile.t',
-    't/00-load.t',
     't/01-methods.t',
     't/author-no-tabs.t',
     't/author-pod-spell.t',

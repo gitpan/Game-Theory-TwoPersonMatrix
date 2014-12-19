@@ -1,7 +1,5 @@
 package Game::Theory::TwoPersonMatrix;
-BEGIN {
-  $Game::Theory::TwoPersonMatrix::AUTHORITY = 'cpan:GENE';
-}
+our $AUTHORITY = 'cpan:GENE';
 
 # ABSTRACT: Analyze a 2 person matrix game
 
@@ -11,9 +9,10 @@ use warnings;
 use Carp;
 use Algorithm::Combinatorics qw( permutations );
 use List::Util qw( max min );
-use List::MoreUtils qw( zip );
+use List::MoreUtils qw( all zip );
+use Array::Transpose;
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 
 
@@ -158,30 +157,111 @@ sub oddments
 
     my ( $player, $opponent );
 
+    my $A = $self->{payoff}[0][0];
+    my $B = $self->{payoff}[0][1];
+    my $C = $self->{payoff}[1][0];
+    my $D = $self->{payoff}[1][1];
+
     my ( $x, $y );
-    $x = $self->{payoff}[1][1] - $self->{payoff}[1][0];
-    $y = $self->{payoff}[0][0] - $self->{payoff}[0][1];
+    $x = $D - $C;
+    $y = $A - $B;
     if ( $x < 0 || $y < 0 )
     {
-        $x = $self->{payoff}[1][0] - $self->{payoff}[1][1];
-        $y = $self->{payoff}[0][1] - $self->{payoff}[0][0];
+        $x = $C - $D;
+        $y = $B - $A;
     }
     my $i = $x / ( $x + $y );
     my $j = $y / ( $x + $y );
     $player = [ $i, $j ];
 
-    $x = $self->{payoff}[1][1] - $self->{payoff}[0][1];
-    $y = $self->{payoff}[0][0] - $self->{payoff}[1][0];
+    $x = $D - $B;
+    $y = $A - $C;
     if ( $x < 0 || $y < 0 )
     {
-        $x = $self->{payoff}[0][1] - $self->{payoff}[1][1];
-        $y = $self->{payoff}[1][0] - $self->{payoff}[0][0];
+        $x = $B - $D;
+        $y = $C - $A;
     }
     $i = $x / ( $x + $y );
     $j = $y / ( $x + $y );
     $opponent = [ $i, $j ];
 
     return [ $player, $opponent ];
+}
+
+
+sub reduce
+{
+    my ($self) = @_;
+
+    my @spliced;
+
+    my $rsize = @{ $self->{payoff} } - 1;
+    my $csize = @{ $self->{payoff}[0] } - 1;
+
+    for my $row ( 0 .. $rsize )
+    {
+#warn "R:$row = @{ $self->{payoff}[$row] }\n";
+        for my $r ( 0 .. $rsize )
+        {
+            next if $r == $row;
+#warn "\tN:$r = @{ $self->{payoff}[$r] }\n";
+            my @cmp;
+            for my $x ( 0 .. $csize )
+            {
+                push @cmp, ( $self->{payoff}[$row][$x] < $self->{payoff}[$r][$x] ? 1 : 0 );
+            }
+#warn "\t\tC:@cmp\n";
+            if ( all { $_ == 1 } @cmp )
+            {
+                push @spliced, $row;
+            }
+        }
+    }
+    for my $row ( @spliced )
+    {
+        # Reduce the payoff row
+        splice @{ $self->{payoff} }, $row, 1;
+        # Eliminate the strategy of the player
+        delete $self->{1}{$row} if exists $self->{1}{$row};
+    }
+    @spliced = ();
+
+    my $transposed = transpose( $self->{payoff} );
+#use Data::Dumper::Concise;print Dumper($transposed);
+
+    $rsize = @$transposed - 1;
+    $csize = @{ $transposed->[0] } - 1;
+
+    for my $row ( 0 .. $rsize )
+    {
+#warn "R:$row = @{ $transposed->[$row] }\n";
+        for my $r ( 0 .. $rsize )
+        {
+            next if $r == $row;
+#warn "\tN:$r = @{ $transposed->[$r] }\n";
+            my @cmp;
+            for my $x ( 0 .. $csize )
+            {
+                push @cmp, ( $transposed->[$row][$x] > $transposed->[$r][$x] ? 1 : 0 );
+            }
+#warn "\t\tC:@cmp\n";
+            if ( all { $_ == 1 } @cmp )
+            {
+                push @spliced, $row;
+            }
+        }
+    }
+    for my $row ( @spliced )
+    {
+        # Reduce the payoff column
+        splice @$transposed, $row, 1;
+        # Eliminate the strategy of the opponent
+        delete $self->{2}{$row} if exists $self->{2}{$row};
+    }
+
+    $self->{payoff} = transpose( $transposed );
+
+    return $self->{payoff};
 }
 
 1;
@@ -198,7 +278,7 @@ Game::Theory::TwoPersonMatrix - Analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.10
+version 0.11
 
 =head1 SYNOPSIS
 
@@ -213,6 +293,7 @@ version 0.10
  };
  $g->expected_payoff();
  $g->counter_strategy($player);
+ $g->reduce();
 
 =head1 DESCRIPTION
 
@@ -283,6 +364,11 @@ C<undef> is returned.
 =head2 oddments()
 
 Return each player's "oddments" for a 2x2 game.
+
+=head2 reduce()
+
+Reduce a game by identifying and eliminating strictly dominated rows or columns
+and the associated strategies.
 
 =head1 SEE ALSO
 

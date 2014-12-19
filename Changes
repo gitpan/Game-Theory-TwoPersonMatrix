@@ -1,5 +1,8 @@
 Revision history for Game-Theory-TwoPersonMatrix
 
+0.12  2014-12-19
+    - Split reduce() into row & col reduce() methods.
+
 0.11  2014-12-19
     - Added reduce() game reduction by strictly dominated rows or columns.
 

@@ -12,7 +12,7 @@ use List::Util qw( max min );
 use List::MoreUtils qw( all zip );
 use Array::Transpose;
 
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 
 
@@ -189,7 +189,7 @@ sub oddments
 }
 
 
-sub reduce
+sub row_reduce
 {
     my ($self) = @_;
 
@@ -208,7 +208,7 @@ sub reduce
             my @cmp;
             for my $x ( 0 .. $csize )
             {
-                push @cmp, ( $self->{payoff}[$row][$x] < $self->{payoff}[$r][$x] ? 1 : 0 );
+                push @cmp, ( $self->{payoff}[$row][$x] <= $self->{payoff}[$r][$x] ? 1 : 0 );
             }
 #warn "\t\tC:@cmp\n";
             if ( all { $_ == 1 } @cmp )
@@ -217,8 +217,12 @@ sub reduce
             }
         }
     }
+
+    my $seen = 0;
     for my $row ( @spliced )
     {
+#warn "S:$row\n";
+        $row -= $seen++;
         # Reduce the payoff row
         splice @{ $self->{payoff} }, $row, 1;
         # Eliminate the strategy of the player
@@ -226,11 +230,21 @@ sub reduce
     }
     @spliced = ();
 
+    return $self->{payoff};
+}
+
+
+sub col_reduce
+{
+    my ($self) = @_;
+
+    my @spliced;
+
     my $transposed = transpose( $self->{payoff} );
 #use Data::Dumper::Concise;print Dumper($transposed);
 
-    $rsize = @$transposed - 1;
-    $csize = @{ $transposed->[0] } - 1;
+    my $rsize = @$transposed - 1;
+    my $csize = @{ $transposed->[0] } - 1;
 
     for my $row ( 0 .. $rsize )
     {
@@ -242,7 +256,7 @@ sub reduce
             my @cmp;
             for my $x ( 0 .. $csize )
             {
-                push @cmp, ( $transposed->[$row][$x] > $transposed->[$r][$x] ? 1 : 0 );
+                push @cmp, ( $transposed->[$row][$x] >= $transposed->[$r][$x] ? 1 : 0 );
             }
 #warn "\t\tC:@cmp\n";
             if ( all { $_ == 1 } @cmp )
@@ -251,6 +265,7 @@ sub reduce
             }
         }
     }
+
     for my $row ( @spliced )
     {
         # Reduce the payoff column
@@ -266,8 +281,6 @@ sub reduce
 
 1;
 
-__END__
-
 =pod
 
 =encoding UTF-8
@@ -278,7 +291,7 @@ Game::Theory::TwoPersonMatrix - Analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.11
+version 0.12
 
 =head1 SYNOPSIS
 
@@ -293,7 +306,9 @@ version 0.11
  };
  $g->expected_payoff();
  $g->counter_strategy($player);
- $g->reduce();
+ $p = $g->saddlepoint();
+ $g->row_reduce();
+ $g->col_reduce();
 
 =head1 DESCRIPTION
 
@@ -365,10 +380,23 @@ C<undef> is returned.
 
 Return each player's "oddments" for a 2x2 game.
 
-=head2 reduce()
+=head2 row_reduce()
 
-Reduce a game by identifying and eliminating strictly dominated rows or columns
-and the associated strategies.
+Reduce a game by identifying and eliminating strictly dominated rows and the
+associated player strategies.
+
+=head2 col_reduce()
+
+Reduce a game by identifying and eliminating strictly dominated columns and the
+associated opponent strategies.
+
+=head1 SEE ALSO
+
+"A Gentle Introduction to Game Theory"
+
+L<http://www.amazon.com/Gentle-Introduction-Theory-Mathematical-World/dp/0821813390>
+
+L<http://books.google.com/books?id=8doVBAAAQBAJ>
 
 =head1 SEE ALSO
 
@@ -390,3 +418,10 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
+
+__END__
+
+
+1;
+__END__
+

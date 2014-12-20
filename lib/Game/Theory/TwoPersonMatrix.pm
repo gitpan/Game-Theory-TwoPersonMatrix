@@ -14,7 +14,7 @@ use List::Util qw( max min );
 use List::MoreUtils qw( all zip );
 use Array::Transpose;
 
-our $VERSION = '0.1201';
+our $VERSION = '0.1202';
 
 
 
@@ -220,17 +220,7 @@ sub row_reduce
         }
     }
 
-    my $seen = 0;
-    for my $row ( @spliced )
-    {
-#warn "1S:$row\n";
-        $row -= $seen++;
-        # Reduce the payoff row
-        splice @{ $self->{payoff} }, $row, 1;
-        # Eliminate the strategy of the player
-        delete $self->{1}{$row + 1} if exists $self->{1}{$row + 1};
-    }
-    @spliced = ();
+    $self->_reduce_game( $self->{payoff}, \@spliced, 1 );
 
     return $self->{payoff};
 }
@@ -243,7 +233,6 @@ sub col_reduce
     my @spliced;
 
     my $transposed = transpose( $self->{payoff} );
-#use Data::Dumper::Concise;print Dumper($transposed);
 
     my $rsize = @$transposed - 1;
     my $csize = @{ $transposed->[0] } - 1;
@@ -268,20 +257,26 @@ sub col_reduce
         }
     }
 
-    my $seen = 0;
-    for my $row ( @spliced )
-    {
-#warn "2S:$row\n";
-        $row -= $seen++;
-        # Reduce the payoff column
-        splice @$transposed, $row, 1;
-        # Eliminate the strategy of the opponent
-        delete $self->{2}{$row + 1} if exists $self->{2}{$row + 1};
-    }
+    $self->_reduce_game( $transposed, \@spliced, 2 );
 
     $self->{payoff} = transpose( $transposed );
 
     return $self->{payoff};
+}
+
+sub _reduce_game
+{
+    my ( $self, $payoff, $spliced, $player ) = @_;
+
+    my $seen = 0;
+    for my $row ( @$spliced )
+    {
+        $row -= $seen++;
+        # Reduce the payoff column
+        splice @$payoff, $row, 1;
+        # Eliminate the strategy of the opponent
+        delete $self->{$player}{$row + 1} if exists $self->{$player}{$row + 1};
+    }
 }
 
 1;
@@ -298,7 +293,7 @@ Game::Theory::TwoPersonMatrix - Analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.1201
+version 0.1202
 
 =head1 SYNOPSIS
 
@@ -307,15 +302,16 @@ version 0.1201
  $g = Game::Theory::TwoPersonMatrix->new(
     1 => { 1 => 0.2, 2 => 0.3, 3 => 0.5 },
     2 => { 1 => 0.1, 2 => 0.7, 3 => 0.2 },
-    payoff => [ [ 0, 1,-1],
-                [-1, 0, 1],
-                [ 1,-1, 0] ]
+    payoff => [ [-5, 4, 6],
+                [ 3,-2, 2],
+                [ 2,-3, 1] ]
  };
- $g->expected_payoff();
- $g->counter_strategy($player);
- $p = $g->saddlepoint();
  $g->row_reduce();
  $g->col_reduce();
+ $p = $g->saddlepoint();
+ $o = $g->oddments();
+ $e = $g->expected_payoff();
+ $c = $g->counter_strategy($player);
 
 =head1 DESCRIPTION
 
@@ -389,13 +385,17 @@ Return each player's "oddments" for a 2x2 game.
 
 =head2 row_reduce()
 
-Reduce a game by identifying and eliminating strictly dominated rows.
+Reduce a game by identifying and eliminating strictly dominated rows and their
+associated player strategies.
 
 =head2 col_reduce()
 
-Reduce a game by identifying and eliminating strictly dominated columns.
+Reduce a game by identifying and eliminating strictly dominated columns and their
+associated opponent strategies.
 
 =head1 SEE ALSO
+
+The F<eg/> and F<t/> scripts in this distribution.
 
 "A Gentle Introduction to Game Theory"
 

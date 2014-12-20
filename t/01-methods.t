@@ -86,6 +86,8 @@ isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
 is_deeply $g->oddments, [ [ 0.3, 0.7 ], [ 0.6, 0.4 ] ], 'oddments';
 
 $g = Game::Theory::TwoPersonMatrix->new(
+    1 => { 1 => .1, 2 => .2, 3 => .3 },
+    2 => { 1 => .1, 2 => .2, 3 => .3 },
     payoff => [ [-5, 4, 6],
                 [ 3,-2, 2],
                 [ 2,-3, 1] ]

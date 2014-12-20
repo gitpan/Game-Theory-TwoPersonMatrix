@@ -109,4 +109,17 @@ is_deeply $g->col_reduce, [ [3,-2,2 ],[1,-2,2],[0,6,0],[-1,5,0] ], 'col_reduce';
 is_deeply $g->row_reduce, [ [3,-2,2],[0,6,0] ], 'row_reduce';
 is_deeply $g->col_reduce, [ [-2,2],[6,0] ], 'col_reduce';
 
+$g = Game::Theory::TwoPersonMatrix->new(
+    1 => { 1 => .1, 2 => .2, 3 => .3 },
+    2 => { 1 => .1, 2 => .2, 3 => .3, 4 => .4 },
+    payoff => [ [3,2,6,2],
+                [5,4,3,4],
+                [1,2,3,1] ]
+);
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '3x4';
+is_deeply $g->mm_tally, {
+    1 => { strategy => [ 0, 1, 0 ], value => 3 },
+    2 => { strategy => [ 0, 1, 0, 1 ], value => 4 }
+}, 'mm_tally';
+
 done_testing();

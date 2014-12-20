@@ -14,7 +14,7 @@ use List::Util qw( max min );
 use List::MoreUtils qw( all zip );
 use Array::Transpose;
 
-our $VERSION = '0.1202';
+our $VERSION = '0.13';
 
 
 
@@ -279,6 +279,45 @@ sub _reduce_game
     }
 }
 
+
+sub mm_tally
+{
+    my ($self) = @_;
+
+    my $mm_tally;
+
+    # Find maximum of row minimums
+    my @m;
+    my %s;
+    for my $row ( 0 .. @{ $self->{payoff} } - 1 )
+    {
+        $s{$row} = min @{ $self->{payoff}[$row] };
+        push @m, $s{$row};
+    }
+    $mm_tally->{1}{value} = max @m;
+    for my $row ( sort { $a <=> $b } keys %s )
+    {
+        push @{ $mm_tally->{1}{strategy} }, ( $s{$row} == $mm_tally->{1}{value} ? 1 : 0 );
+    }
+
+    # Find minimum of colum maximums
+    @m = ();
+    %s = ();
+    my $transposed = transpose( $self->{payoff} );
+    for my $row ( 0 .. @$transposed - 1 )
+    {
+        $s{$row} = max @{ $transposed->[$row] };
+        push @m, $s{$row};
+    }
+    $mm_tally->{2}{value} = min @m;
+    for my $row ( sort { $a <=> $b } keys %s )
+    {
+        push @{ $mm_tally->{2}{strategy} }, ( $s{$row} == $mm_tally->{2}{value} ? 1 : 0 );
+    }
+
+    return $mm_tally;
+}
+
 1;
 
 __END__
@@ -293,7 +332,7 @@ Game::Theory::TwoPersonMatrix - Analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.1202
+version 0.13
 
 =head1 SYNOPSIS
 
@@ -348,7 +387,7 @@ Create a new C<Game::Theory::TwoPersonMatrix> object.
 
 =head2 expected_payoff()
 
- $g->expected_payoff();
+ $e = $g->expected_payoff();
 
 Return the expected payoff value of the game.
 
@@ -359,7 +398,7 @@ Return the expected payoff value of the game.
     2 => { 1 => 1, 2 => 0 },
     payoff => [ ['a','b'], ['c','d'] ]
  );
- $g->s_expected_payoff();
+ $s = $g->s_expected_payoff();
 
 Return the expected payoff expression for a non-numeric game.
 
@@ -368,30 +407,40 @@ examples.
 
 =head2 counter_strategy()
 
- $g->counter_strategy($player);
+ $c = $g->counter_strategy($player);
 
 Return the counter-strategies for a given player.
 
 =head2 saddlepoint()
 
- $v = $g->saddlepoint;
+ $p = $g->saddlepoint;
 
 If the game is strictly determined, the saddlepoint is returned.  Otherwise
 C<undef> is returned.
 
 =head2 oddments()
 
+ $o = $g->oddments();
+
 Return each player's "oddments" for a 2x2 game.
 
 =head2 row_reduce()
+
+ $g->row_reduce();
 
 Reduce a game by identifying and eliminating strictly dominated rows and their
 associated player strategies.
 
 =head2 col_reduce()
 
+ $g->col_reduce();
+
 Reduce a game by identifying and eliminating strictly dominated columns and their
 associated opponent strategies.
+
+=head2 mm_tally()
+
+Return the maximum of row minimums and the minimum of column maximums.
 
 =head1 SEE ALSO
 

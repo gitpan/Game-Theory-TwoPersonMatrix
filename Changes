@@ -1,5 +1,8 @@
 Revision history for Game-Theory-TwoPersonMatrix
 
+0.13  2014-12-20 12:12:27
+    - Added mm_tally().
+
 0.1202 2014-12-19
     - Improved documentation.
 

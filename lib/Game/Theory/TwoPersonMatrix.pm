@@ -1,5 +1,7 @@
 package Game::Theory::TwoPersonMatrix;
-our $AUTHORITY = 'cpan:GENE';
+BEGIN {
+  $Game::Theory::TwoPersonMatrix::AUTHORITY = 'cpan:GENE';
+}
 
 # ABSTRACT: Analyze a 2 person matrix game
 
@@ -12,7 +14,7 @@ use List::Util qw( max min );
 use List::MoreUtils qw( all zip );
 use Array::Transpose;
 
-our $VERSION = '0.12';
+our $VERSION = '0.1201';
 
 
 
@@ -221,12 +223,12 @@ sub row_reduce
     my $seen = 0;
     for my $row ( @spliced )
     {
-#warn "S:$row\n";
+#warn "1S:$row\n";
         $row -= $seen++;
         # Reduce the payoff row
         splice @{ $self->{payoff} }, $row, 1;
         # Eliminate the strategy of the player
-        delete $self->{1}{$row} if exists $self->{1}{$row};
+        delete $self->{1}{$row + 1} if exists $self->{1}{$row + 1};
     }
     @spliced = ();
 
@@ -266,12 +268,15 @@ sub col_reduce
         }
     }
 
+    my $seen = 0;
     for my $row ( @spliced )
     {
+#warn "2S:$row\n";
+        $row -= $seen++;
         # Reduce the payoff column
         splice @$transposed, $row, 1;
         # Eliminate the strategy of the opponent
-        delete $self->{2}{$row} if exists $self->{2}{$row};
+        delete $self->{2}{$row + 1} if exists $self->{2}{$row + 1};
     }
 
     $self->{payoff} = transpose( $transposed );
@@ -280,6 +285,8 @@ sub col_reduce
 }
 
 1;
+
+__END__
 
 =pod
 
@@ -291,7 +298,7 @@ Game::Theory::TwoPersonMatrix - Analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.12
+version 0.1201
 
 =head1 SYNOPSIS
 
@@ -382,21 +389,11 @@ Return each player's "oddments" for a 2x2 game.
 
 =head2 row_reduce()
 
-Reduce a game by identifying and eliminating strictly dominated rows and the
-associated player strategies.
+Reduce a game by identifying and eliminating strictly dominated rows.
 
 =head2 col_reduce()
 
-Reduce a game by identifying and eliminating strictly dominated columns and the
-associated opponent strategies.
-
-=head1 SEE ALSO
-
-"A Gentle Introduction to Game Theory"
-
-L<http://www.amazon.com/Gentle-Introduction-Theory-Mathematical-World/dp/0821813390>
-
-L<http://books.google.com/books?id=8doVBAAAQBAJ>
+Reduce a game by identifying and eliminating strictly dominated columns.
 
 =head1 SEE ALSO
 
@@ -418,10 +415,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-
-__END__
-
-
-1;
-__END__
-

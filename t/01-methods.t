@@ -95,6 +95,8 @@ is_deeply $g->row_reduce, [ [-5,4,6],[3,-2,2] ], 'row_reduce';
 is_deeply $g->col_reduce, [ [-5,4],[3,-2] ], 'col_reduce';
 
 $g = Game::Theory::TwoPersonMatrix->new(
+    1 => { 1 => .1, 2 => .2, 3 => .3, 4 => .4 },
+    2 => { 1 => .1, 2 => .2, 3 => .3, 4 => .4 },
     payoff => [ [ 3,-2, 2, 1],
                 [ 1,-2, 2, 0],
                 [ 0, 6, 0, 7],

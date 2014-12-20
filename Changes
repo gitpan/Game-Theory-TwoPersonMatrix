@@ -1,5 +1,8 @@
 Revision history for Game-Theory-TwoPersonMatrix
 
+0.1201 2014-12-19
+    - Fixed strategy pruning logic in *reduce().
+
 0.12  2014-12-19
     - Split reduce() into row & col reduce() methods.
 

@@ -1,7 +1,13 @@
 Revision history for Game-Theory-TwoPersonMatrix
 
+0.14  2014-12-21 09:39:33
+    - Made mm_tally() honor non-zero-sum games.
+    - Improved documentation.
+    - Added pareto_optimal().
+
 0.13  2014-12-20 12:12:27
     - Added mm_tally().
+    - Improved documentation.
 
 0.1202 2014-12-19
     - Improved documentation.

@@ -14,7 +14,7 @@ use List::Util qw( max min );
 use List::MoreUtils qw( all zip );
 use Array::Transpose;
 
-our $VERSION = '0.13';
+our $VERSION = '0.14';
 
 
 
@@ -22,9 +22,11 @@ sub new {
     my $class = shift;
     my %args = @_;
     my $self = {
-        1 => $args{1} || { 1 => '0.5', 2 => '0.5' },
-        2 => $args{2} || { 1 => '0.5', 2 => '0.5' },
-        payoff => $args{payoff} || [ [1,-1], [-1,1] ],
+        1 => $args{1},
+        2 => $args{2},
+        payoff => $args{payoff},
+        payoff1 => $args{payoff1},
+        payoff2 => $args{payoff2},
     };
     bless $self, $class;
     return $self;
@@ -286,36 +288,110 @@ sub mm_tally
 
     my $mm_tally;
 
-    # Find maximum of row minimums
-    my @m;
-    my %s;
-    for my $row ( 0 .. @{ $self->{payoff} } - 1 )
+    if ( $self->{payoff1} && $self->{payoff2} )
     {
-        $s{$row} = min @{ $self->{payoff}[$row] };
-        push @m, $s{$row};
-    }
-    $mm_tally->{1}{value} = max @m;
-    for my $row ( sort { $a <=> $b } keys %s )
-    {
-        push @{ $mm_tally->{1}{strategy} }, ( $s{$row} == $mm_tally->{1}{value} ? 1 : 0 );
-    }
+        # Find maximum of row minimums for each player
+        $mm_tally = $self->_tally_max( $mm_tally, 1, $self->{payoff1} );
 
-    # Find minimum of colum maximums
-    @m = ();
-    %s = ();
-    my $transposed = transpose( $self->{payoff} );
-    for my $row ( 0 .. @$transposed - 1 )
-    {
-        $s{$row} = max @{ $transposed->[$row] };
-        push @m, $s{$row};
+        # Find minimum of column maximums
+        my @m = ();
+        my %s = ();
+        my $transposed = transpose( $self->{payoff2} );
+        for my $row ( 0 .. @$transposed - 1 )
+        {
+            $s{$row} = min @{ $transposed->[$row] };
+            push @m, $s{$row};
+        }
+        $mm_tally->{2}{value} = max @m;
+        for my $row ( sort { $a <=> $b } keys %s )
+        {
+            push @{ $mm_tally->{2}{strategy} }, ( $s{$row} == $mm_tally->{2}{value} ? 1 : 0 );
+        }
     }
-    $mm_tally->{2}{value} = min @m;
-    for my $row ( sort { $a <=> $b } keys %s )
+    else
     {
-        push @{ $mm_tally->{2}{strategy} }, ( $s{$row} == $mm_tally->{2}{value} ? 1 : 0 );
+        # Find maximum of row minimums
+        $mm_tally = $self->_tally_max( $mm_tally, 1, $self->{payoff} );
+
+        # Find minimum of column maximums
+        my @m = ();
+        my %s = ();
+        my $transposed = transpose( $self->{payoff} );
+        for my $row ( 0 .. @$transposed - 1 )
+        {
+            $s{$row} = max @{ $transposed->[$row] };
+            push @m, $s{$row};
+        }
+        $mm_tally->{2}{value} = min @m;
+        for my $row ( sort { $a <=> $b } keys %s )
+        {
+            push @{ $mm_tally->{2}{strategy} }, ( $s{$row} == $mm_tally->{2}{value} ? 1 : 0 );
+        }
     }
 
     return $mm_tally;
+}
+
+sub _tally_max
+{
+    my ( $self, $mm_tally, $player, $payoff ) = @_;
+
+    my @m;
+    my %s;
+
+    # Find maximum of row minimums
+    for my $row ( 0 .. @$payoff - 1 )
+    {
+        $s{$row} = min @{ $payoff->[$row] };
+        push @m, $s{$row};
+    }
+
+    $mm_tally->{$player}{value} = max @m;
+
+    for my $row ( sort { $a <=> $b } keys %s )
+    {
+        push @{ $mm_tally->{$player}{strategy} }, ( $s{$row} == $mm_tally->{$player}{value} ? 1 : 0 );
+    }
+
+    return $mm_tally;
+}
+
+
+sub pareto_optimal
+{
+    my ($self) = @_;
+
+    my $pareto_optimal;
+
+    my $rsize = @{ $self->{payoff1} } - 1;
+    my $csize = @{ $self->{payoff1}[0] } - 1;
+
+    for my $row ( 0 .. $rsize )
+    {
+        for my $col ( 0 .. $csize )
+        {
+#warn "RC:$row,$col = ($self->{payoff1}[$row][$col],$self->{payoff2}[$row][$col])\n";
+
+            my %seen;
+            for my $r ( 0 .. $rsize )
+            {
+                for my $c ( 0 .. $csize )
+                {
+                    next if ( $r == $row && $c == $col ) || $seen{"$r,$c"}++;
+#warn "\trc:$r,$c = ($self->{payoff1}[$r][$c],$self->{payoff2}[$r][$c])\n";
+                    if ( $self->{payoff1}[$row][$col] >= $self->{payoff1}[$r][$c]
+                        && $self->{payoff2}[$row][$col] >= $self->{payoff2}[$r][$c] )
+                    {
+                        $pareto_optimal->{ "$row,$col" } = [
+                            $self->{payoff1}[$row][$col], $self->{payoff2}[$row][$col]
+                        ];
+                    }
+                }
+            }
+        }
+    }
+
+    return $pareto_optimal;
 }
 
 1;
@@ -332,12 +408,11 @@ Game::Theory::TwoPersonMatrix - Analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.13
+version 0.14
 
 =head1 SYNOPSIS
 
  use Game::Theory::TwoPersonMatrix;
- my $g = Game::Theory::TwoPersonMatrix->new();
  $g = Game::Theory::TwoPersonMatrix->new(
     1 => { 1 => 0.2, 2 => 0.3, 3 => 0.5 },
     2 => { 1 => 0.1, 2 => 0.7, 3 => 0.2 },
@@ -351,11 +426,13 @@ version 0.13
  $o = $g->oddments();
  $e = $g->expected_payoff();
  $c = $g->counter_strategy($player);
+ $m = $g->mm_tally();
+ $n = $g->pareto_optimal();
 
 =head1 DESCRIPTION
 
 A C<Game::Theory::TwoPersonMatrix> analyzes a two person matrix game
-of player names, strategies and utilities.
+of player names, strategies and utilities ("payoffs").
 
 The players must have the same number of strategies, and each strategy must have
 the same size utility vectors as all the others.
@@ -369,18 +446,19 @@ to the tabular format of a matrix game:
  Player |   0.5    1   -1  < Payoff
     1   |   0.5   -1    1  <
 
-The above is the default - a symmetrical zero-sum game.
-
 =head1 METHODS
 
 =head2 new()
 
- $g = Game::Theory::TwoPersonMatrix->new();
  $g = Game::Theory::TwoPersonMatrix->new(
     1 => { 1 => '0.5', 2 => '0.5' },
     2 => { 1 => '0.5', 2 => '0.5' },
     payoff => [ [1,0],
                 [0,1] ]
+ );
+ $g = Game::Theory::TwoPersonMatrix->new(
+    payoff1 => [ [2,3],[2,1] ],
+    payoff2 => [ [3,5],[2,3] ],
  );
 
 Create a new C<Game::Theory::TwoPersonMatrix> object.
@@ -440,7 +518,16 @@ associated opponent strategies.
 
 =head2 mm_tally()
 
-Return the maximum of row minimums and the minimum of column maximums.
+ $t = $g->mm_tally();
+
+For zero-sum games, return the maximum of row minimums and the minimum of column
+maximums.  For non-zero-sum games, return the maximum of row and column minimums.
+
+=head2 pareto_optimal()
+
+ $n = $g->pareto_optimal();
+
+Return the Pareto optimal outcomes.
 
 =head1 SEE ALSO
 

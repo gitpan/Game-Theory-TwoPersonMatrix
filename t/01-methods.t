@@ -110,16 +110,38 @@ is_deeply $g->row_reduce, [ [3,-2,2],[0,6,0] ], 'row_reduce';
 is_deeply $g->col_reduce, [ [-2,2],[6,0] ], 'col_reduce';
 
 $g = Game::Theory::TwoPersonMatrix->new(
-    1 => { 1 => .1, 2 => .2, 3 => .3 },
-    2 => { 1 => .1, 2 => .2, 3 => .3, 4 => .4 },
     payoff => [ [3,2,6,2],
                 [5,4,3,4],
                 [1,2,3,1] ]
 );
 isa_ok $g, 'Game::Theory::TwoPersonMatrix', '3x4';
 is_deeply $g->mm_tally, {
-    1 => { strategy => [ 0, 1, 0 ], value => 3 },
-    2 => { strategy => [ 0, 1, 0, 1 ], value => 4 }
+    1 => { strategy => [0,1,0], value => 3 },
+    2 => { strategy => [0,1,0,1], value => 4 }
 }, 'mm_tally';
+
+$g = Game::Theory::TwoPersonMatrix->new(
+    payoff1 => [ [2,3],[2,1] ],
+    payoff2 => [ [3,5],[2,3] ],
+);
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
+is_deeply $g->mm_tally, {
+    1 => { strategy => [1,0], value => 2 },
+    2 => { strategy => [0,1], value => 3 }
+}, 'mm_tally';
+
+$g = Game::Theory::TwoPersonMatrix->new(
+    payoff1 => [ [-5,-15],[0,-10] ],
+    payoff2 => [ [-5,0],[-15,-10] ],
+);
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
+is_deeply $g->pareto_optimal, { "0,0" => [-5,-5] }, 'pareto_optimal';
+
+$g = Game::Theory::TwoPersonMatrix->new(
+    payoff1 => [ [2,3],[2,1] ],
+    payoff2 => [ [3,5],[2,3] ],
+);
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
+is_deeply $g->pareto_optimal, { "0,0" => [2,3], "0,1" => [3,5] }, 'pareto_optimal';
 
 done_testing();

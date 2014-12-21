@@ -22,6 +22,7 @@ bimatrix
 metacpan
 saddlepoint
 oddments
+equilibria
 Gene
 Boggs
 gene

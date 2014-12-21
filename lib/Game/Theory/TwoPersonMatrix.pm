@@ -11,10 +11,10 @@ use warnings;
 use Carp;
 use Algorithm::Combinatorics qw( permutations );
 use List::Util qw( max min );
-use List::MoreUtils qw( all zip );
+use List::MoreUtils qw( all indexes zip );
 use Array::Transpose;
 
-our $VERSION = '0.14';
+our $VERSION = '0.15';
 
 
 
@@ -382,6 +382,7 @@ sub pareto_optimal
                     if ( $self->{payoff1}[$row][$col] >= $self->{payoff1}[$r][$c]
                         && $self->{payoff2}[$row][$col] >= $self->{payoff2}[$r][$c] )
                     {
+#warn "\t\t$row,$col > $r,$c at ($self->{payoff1}[$row][$col], $self->{payoff2}[$row][$col])\n";
                         $pareto_optimal->{ "$row,$col" } = [
                             $self->{payoff1}[$row][$col], $self->{payoff2}[$row][$col]
                         ];
@@ -392,6 +393,41 @@ sub pareto_optimal
     }
 
     return $pareto_optimal;
+}
+
+
+sub nash
+{
+    my ($self) = @_;
+
+    my $nash;
+
+    my $rsize = @{ $self->{payoff1} } - 1;
+    my $csize = @{ $self->{payoff1}[0] } - 1;
+
+    for my $row ( 0 .. $rsize )
+    {
+        my $rmax = max @{ $self->{payoff2}[$row] };
+
+        for my $col ( 0 .. $csize )
+        {
+#warn "RC:$row,$col = ($self->{payoff1}[$row][$col],$self->{payoff2}[$row][$col])\n";
+
+            my @col;
+            for my $r ( 0 .. $rsize )
+            {
+                push @col, $self->{payoff1}[$r][$col];
+            }
+            my $cmax = max @col;
+            if ( $self->{payoff1}[$row][$col] == $cmax && $self->{payoff2}[$row][$col] == $rmax )
+            {
+#warn "\t$self->{payoff1}[$row][$col] == $cmax && $self->{payoff2}[$row][$col] == $rmax\n";
+                $nash->{"$row,$col"} = [ $self->{payoff1}[$row][$col],$self->{payoff2}[$row][$col] ];
+            }
+        }
+    }
+
+    return $nash;
 }
 
 1;
@@ -408,7 +444,7 @@ Game::Theory::TwoPersonMatrix - Analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.14
+version 0.15
 
 =head1 SYNOPSIS
 
@@ -426,8 +462,9 @@ version 0.14
  $o = $g->oddments();
  $e = $g->expected_payoff();
  $c = $g->counter_strategy($player);
- $m = $g->mm_tally();
- $n = $g->pareto_optimal();
+ $t = $g->mm_tally();
+ $m = $g->pareto_optimal();
+ $n = $g->nash();
 
 =head1 DESCRIPTION
 
@@ -525,9 +562,18 @@ maximums.  For non-zero-sum games, return the maximum of row and column minimums
 
 =head2 pareto_optimal()
 
- $n = $g->pareto_optimal();
+ $m = $g->pareto_optimal();
 
 Return the Pareto optimal outcomes.
+
+=head2 nash()
+
+ $n = $g->nash();
+
+Identify the Nash equilibria.
+
+Given payoff pair C<(a, b)> B<a> is maximum for its column and B<b> is maximum
+for its row.
 
 =head1 SEE ALSO
 

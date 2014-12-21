@@ -1,5 +1,8 @@
 Revision history for Game-Theory-TwoPersonMatrix
 
+0.15  2014-12-21 01:49:04
+    - Implemented the nash() equilibria method!
+
 0.14  2014-12-21 09:39:33
     - Made mm_tally() honor non-zero-sum games.
     - Improved documentation.

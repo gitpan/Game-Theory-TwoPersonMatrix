@@ -14,7 +14,7 @@ use List::Util qw( max min );
 use List::MoreUtils qw( all indexes zip );
 use Array::Transpose;
 
-our $VERSION = '0.15';
+our $VERSION = '0.1501';
 
 
 
@@ -444,7 +444,7 @@ Game::Theory::TwoPersonMatrix - Analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.15
+version 0.1501
 
 =head1 SYNOPSIS
 
@@ -462,6 +462,11 @@ version 0.15
  $o = $g->oddments();
  $e = $g->expected_payoff();
  $c = $g->counter_strategy($player);
+
+ $g = Game::Theory::TwoPersonMatrix->new(
+    payoff1 => [ [5,3,8,2],[6,5,7,1],[7,4,6,0] ],
+    payoff2 => [ [2,0,1,3],[3,4,4,1],[5,6,8,2] ],
+ );
  $t = $g->mm_tally();
  $m = $g->pareto_optimal();
  $n = $g->nash();
@@ -482,6 +487,9 @@ to the tabular format of a matrix game:
          Strategy 0.5  0.5
  Player |   0.5    1   -1  < Payoff
     1   |   0.5   -1    1  <
+
+A non-zero sum game is represented by two payoff profiles, as above in the
+SYNOPSIS.
 
 =head1 METHODS
 

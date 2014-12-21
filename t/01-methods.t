@@ -3,7 +3,7 @@ use_ok 'Game::Theory::TwoPersonMatrix';
 
 my $g = Game::Theory::TwoPersonMatrix->new;
 isa_ok $g, 'Game::Theory::TwoPersonMatrix';
-is $g->expected_payoff(), 0, 'expected_payoff';
+is $g->expected_payoff(), undef, 'expected_payoff';
 
 $g = Game::Theory::TwoPersonMatrix->new(
     1 => { 1 => '0.2', 2 => '0.8' },
@@ -164,5 +164,23 @@ $g = Game::Theory::TwoPersonMatrix->new(
 );
 isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
 is_deeply $g->nash, { "0,1" => [0,-1], "1,0" => [0,-1], "1,1" => [0,-1] }, 'nash';
+
+$g = Game::Theory::TwoPersonMatrix->new(
+    1 => { 1 => '0.2', 2 => '0.8' },
+    2 => { 1 => '0.3', 2 => '0.7' },
+    payoff1 => [ [5,0], [-1,2] ],
+    payoff2 => [ [5,0], [-1,2] ],
+);
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
+is_deeply $g->expected_payoff(), [1.18, 1.18], 'expected_payoff';
+
+$g = Game::Theory::TwoPersonMatrix->new(
+    1 => { 1 => '0.5', 2 => '0.5' },
+    2 => { 1 => '0.4', 2 => '0.6' },
+    payoff1 => [ [3,2],[0,4] ],
+    payoff2 => [ [2,1],[3,4] ],
+);
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
+is_deeply $g->expected_payoff(), [2.4, 2.5], 'expected_payoff';
 
 done_testing();

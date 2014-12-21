@@ -11,10 +11,10 @@ use warnings;
 use Carp;
 use Algorithm::Combinatorics qw( permutations );
 use List::Util qw( max min );
-use List::MoreUtils qw( all indexes zip );
+use List::MoreUtils qw( all zip );
 use Array::Transpose;
 
-our $VERSION = '0.1501';
+our $VERSION = '0.1502';
 
 
 
@@ -37,15 +37,22 @@ sub expected_payoff
 {
     my ($self) = @_;
 
-    my $expected_payoff = 0;
+    my $expected_payoff;
     # For each strategy of player 1...
     for my $i ( sort { $a <=> $b } keys %{ $self->{1} } )
     {
         # For each strategy of player 2...
         for my $j ( sort { $a <=> $b } keys %{ $self->{2} } )
         {
-            # Expected value is the sum of the probabilities of each payoff
-            $expected_payoff += $self->{1}{$i} * $self->{2}{$j} * $self->{payoff}[$i - 1][$j - 1];
+            if ( $self->{payoff1} && $self->{payoff2} )
+            {
+                $expected_payoff->[0] += $self->{1}{$i} * $self->{2}{$j} * $self->{payoff1}[$i - 1][$j - 1];
+                $expected_payoff->[1] += $self->{1}{$i} * $self->{2}{$j} * $self->{payoff2}[$i - 1][$j - 1];
+            }
+            else {
+                # Expected value is the sum of the probabilities of each payoff
+                $expected_payoff += $self->{1}{$i} * $self->{2}{$j} * $self->{payoff}[$i - 1][$j - 1];
+            }
         }
     }
 
@@ -444,7 +451,7 @@ Game::Theory::TwoPersonMatrix - Analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.1501
+version 0.1502
 
 =head1 SYNOPSIS
 
@@ -464,12 +471,15 @@ version 0.1501
  $c = $g->counter_strategy($player);
 
  $g = Game::Theory::TwoPersonMatrix->new(
+    1 => { 1 => 0.1, 2 => 0.2, 3 => 0.7 },
+    2 => { 1 => 0.1, 2 => 0.2, 3 => 0.3, 4 => 0.4 },
     payoff1 => [ [5,3,8,2],[6,5,7,1],[7,4,6,0] ],
     payoff2 => [ [2,0,1,3],[3,4,4,1],[5,6,8,2] ],
  );
  $t = $g->mm_tally();
  $m = $g->pareto_optimal();
  $n = $g->nash();
+ $e = $g->expected_payoff();
 
 =head1 DESCRIPTION
 

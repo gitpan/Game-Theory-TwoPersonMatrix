@@ -183,4 +183,14 @@ $g = Game::Theory::TwoPersonMatrix->new(
 isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
 is_deeply $g->expected_payoff(), [2.4, 2.5], 'expected_payoff';
 
+$g = Game::Theory::TwoPersonMatrix->new(
+    1 => { 1 => '0.2', 2 => '0.8' },
+    2 => { 1 => '0.7', 2 => '0.3' },
+    payoff1 => [ [3,2],[0,4] ],
+    payoff2 => [ [2,1],[3,4] ],
+);
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
+is_deeply $g->counter_strategy(1), [2.7, 1.2], 'player 1 counter_strategy';
+is_deeply $g->counter_strategy(2), [2.8, 3.4], 'player 2 counter_strategy';
+
 done_testing();

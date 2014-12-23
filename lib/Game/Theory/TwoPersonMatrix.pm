@@ -1,5 +1,7 @@
 package Game::Theory::TwoPersonMatrix;
-our $AUTHORITY = 'cpan:GENE';
+BEGIN {
+  $Game::Theory::TwoPersonMatrix::AUTHORITY = 'cpan:GENE';
+}
 
 # ABSTRACT: Analyze a 2 person matrix game
 
@@ -12,7 +14,7 @@ use List::Util qw( max min );
 use List::MoreUtils qw( all zip );
 use Array::Transpose;
 
-our $VERSION = '0.1504';
+our $VERSION = '0.16';
 
 
 
@@ -100,7 +102,7 @@ sub counter_strategy
         my $g = Game::Theory::TwoPersonMatrix->new(
             $player   => { zip @keys, @$x },
             $opponent => $self->{$opponent},
-            payoff    => $self->{payoff},
+            payoff    => $self->{payoff} || $self->{"payoff$player"},
         );
 
         push @$counter_strategy, $g->expected_payoff();
@@ -454,7 +456,7 @@ Game::Theory::TwoPersonMatrix - Analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.1504
+version 0.16
 
 =head1 SYNOPSIS
 
@@ -483,6 +485,7 @@ version 0.1504
  $m = $g->pareto_optimal();
  $n = $g->nash();
  $e = $g->expected_payoff();
+ $c = $g->counter_strategy($opponent);
 
 =head1 DESCRIPTION
 
@@ -547,7 +550,8 @@ examples.
 
  $c = $g->counter_strategy($player);
 
-Return the counter-strategies for a given player of a zero-sum game.
+Return the counter-strategies for a given player of either a zero-sum or
+non-zero-sum game.
 
 =head2 saddlepoint()
 

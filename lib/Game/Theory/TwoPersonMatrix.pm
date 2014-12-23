@@ -1,7 +1,5 @@
 package Game::Theory::TwoPersonMatrix;
-BEGIN {
-  $Game::Theory::TwoPersonMatrix::AUTHORITY = 'cpan:GENE';
-}
+our $AUTHORITY = 'cpan:GENE';
 
 # ABSTRACT: Analyze a 2 person matrix game
 
@@ -14,7 +12,7 @@ use List::Util qw( max min );
 use List::MoreUtils qw( all zip );
 use Array::Transpose;
 
-our $VERSION = '0.1503';
+our $VERSION = '0.1504';
 
 
 
@@ -456,7 +454,7 @@ Game::Theory::TwoPersonMatrix - Analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.1503
+version 0.1504
 
 =head1 SYNOPSIS
 
@@ -490,9 +488,6 @@ version 0.1503
 
 A C<Game::Theory::TwoPersonMatrix> analyzes a two person matrix game
 of player names, strategies and utilities ("payoffs").
-
-The players must have the same number of strategies, and each strategy must have
-the same size utility vectors as all the others.
 
 Players 1 and 2 are the "row" and "column" players, respectively.  This is due
 to the tabular format of a matrix game:

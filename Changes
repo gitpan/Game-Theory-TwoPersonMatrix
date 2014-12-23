@@ -1,5 +1,8 @@
 Revision history for Game-Theory-TwoPersonMatrix
 
+0.1503 2014-12-22 08:41:40
+    - Improved documentation and code comments. 
+
 0.1502 2014-12-21 06:21:21
     - Handled non-zero-sum expected_payoff().
 

@@ -14,7 +14,7 @@ use List::Util qw( max min );
 use List::MoreUtils qw( all zip );
 use Array::Transpose;
 
-our $VERSION = '0.1502';
+our $VERSION = '0.1503';
 
 
 
@@ -297,10 +297,10 @@ sub mm_tally
 
     if ( $self->{payoff1} && $self->{payoff2} )
     {
-        # Find maximum of row minimums for each player
+        # Find maximum of row minimums for the player
         $mm_tally = $self->_tally_max( $mm_tally, 1, $self->{payoff1} );
 
-        # Find minimum of column maximums
+        # Find minimum of column maximums for the opponent
         my @m = ();
         my %s = ();
         my $transposed = transpose( $self->{payoff2} );
@@ -373,26 +373,28 @@ sub pareto_optimal
     my $rsize = @{ $self->{payoff1} } - 1;
     my $csize = @{ $self->{payoff1}[0] } - 1;
 
+    # Compare each row & column with every other
     for my $row ( 0 .. $rsize )
     {
         for my $col ( 0 .. $csize )
         {
 #warn "RC:$row,$col = ($self->{payoff1}[$row][$col],$self->{payoff2}[$row][$col])\n";
 
+            # Find all pairs to compare against
             my %seen;
             for my $r ( 0 .. $rsize )
             {
                 for my $c ( 0 .. $csize )
                 {
                     next if ( $r == $row && $c == $col ) || $seen{"$r,$c"}++;
+                    my $p = $self->{payoff1}[$row][$col];
+                    my $q = $self->{payoff2}[$row][$col];
 #warn "\trc:$r,$c = ($self->{payoff1}[$r][$c],$self->{payoff2}[$r][$c])\n";
-                    if ( $self->{payoff1}[$row][$col] >= $self->{payoff1}[$r][$c]
-                        && $self->{payoff2}[$row][$col] >= $self->{payoff2}[$r][$c] )
+                    if ( $p >= $self->{payoff1}[$r][$c] && $q >= $self->{payoff2}[$r][$c] )
                     {
-#warn "\t\t$row,$col > $r,$c at ($self->{payoff1}[$row][$col], $self->{payoff2}[$row][$col])\n";
-                        $pareto_optimal->{ "$row,$col" } = [
-                            $self->{payoff1}[$row][$col], $self->{payoff2}[$row][$col]
-                        ];
+#warn "\t\t$row,$col > $r,$c at ($p,$q)\n";
+                        # XXX We exploit the unique key feature of perl hashes
+                        $pareto_optimal->{ "$row,$col" } = [ $p, $q ];
                     }
                 }
             }
@@ -412,6 +414,7 @@ sub nash
     my $rsize = @{ $self->{payoff1} } - 1;
     my $csize = @{ $self->{payoff1}[0] } - 1;
 
+    # Find all row & column max pairs
     for my $row ( 0 .. $rsize )
     {
         my $rmax = max @{ $self->{payoff2}[$row] };
@@ -426,10 +429,12 @@ sub nash
                 push @col, $self->{payoff1}[$r][$col];
             }
             my $cmax = max @col;
-            if ( $self->{payoff1}[$row][$col] == $cmax && $self->{payoff2}[$row][$col] == $rmax )
+            my $p = $self->{payoff1}[$row][$col];
+            my $q = $self->{payoff2}[$row][$col];
+            if ( $p == $cmax && $q == $rmax )
             {
-#warn "\t$self->{payoff1}[$row][$col] == $cmax && $self->{payoff2}[$row][$col] == $rmax\n";
-                $nash->{"$row,$col"} = [ $self->{payoff1}[$row][$col],$self->{payoff2}[$row][$col] ];
+#warn "\t$p == $cmax && $q == $rmax\n";
+                $nash->{"$row,$col"} = [ $p, $q ];
             }
         }
     }
@@ -451,7 +456,7 @@ Game::Theory::TwoPersonMatrix - Analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.1502
+version 0.1503
 
 =head1 SYNOPSIS
 
@@ -518,11 +523,16 @@ SYNOPSIS.
 
 Create a new C<Game::Theory::TwoPersonMatrix> object.
 
+Player strategies are given by a hash reference of numbered keys - one for each
+strategy.  Payoffs are given by array references of lists of outcomes.  For
+zero-sum games this is a single payoff array.  For non-zero-sum games this is
+given as two arrays - one for each player.
+
 =head2 expected_payoff()
 
  $e = $g->expected_payoff();
 
-Return the expected payoff value of the game.
+Return the expected payoff value of a game.
 
 =head2 s_expected_payoff()
 
@@ -533,7 +543,7 @@ Return the expected payoff value of the game.
  );
  $s = $g->s_expected_payoff();
 
-Return the expected payoff expression for a non-numeric game.
+Return the expected payoff expression for a non-numeric, zero-sum game.
 
 Using real payoff values, we solve the resulting expression for p in the F<eg/>
 examples.
@@ -542,34 +552,34 @@ examples.
 
  $c = $g->counter_strategy($player);
 
-Return the counter-strategies for a given player.
+Return the counter-strategies for a given player of a zero-sum game.
 
 =head2 saddlepoint()
 
  $p = $g->saddlepoint;
 
-If the game is strictly determined, the saddlepoint is returned.  Otherwise
-C<undef> is returned.
+If the 2x2 zero-sum game is strictly determined, the saddlepoint is returned.
+Otherwise C<undef> is returned.
 
 =head2 oddments()
 
  $o = $g->oddments();
 
-Return each player's "oddments" for a 2x2 game.
+Return each player's "oddments" for a 2x2 zero-sum game.
 
 =head2 row_reduce()
 
  $g->row_reduce();
 
-Reduce a game by identifying and eliminating strictly dominated rows and their
-associated player strategies.
+Reduce a zero-sum game by identifying and eliminating strictly dominated rows
+and their associated player strategies.
 
 =head2 col_reduce()
 
  $g->col_reduce();
 
-Reduce a game by identifying and eliminating strictly dominated columns and their
-associated opponent strategies.
+Reduce a zero-sum game by identifying and eliminating strictly dominated columns
+and their associated opponent strategies.
 
 =head2 mm_tally()
 
@@ -582,15 +592,15 @@ maximums.  For non-zero-sum games, return the maximum of row and column minimums
 
  $m = $g->pareto_optimal();
 
-Return the Pareto optimal outcomes.
+Return the Pareto optimal outcomes for a non-zero-sum game.
 
 =head2 nash()
 
  $n = $g->nash();
 
-Identify the Nash equilibria.
+Identify the Nash equilibria in a non-zero-sum game.
 
-Given payoff pair C<(a, b)> B<a> is maximum for its column and B<b> is maximum
+Given payoff pair C<(a,b)>, B<a> is maximum for its column and B<b> is maximum
 for its row.
 
 =head1 SEE ALSO

@@ -10,8 +10,9 @@ build_requires:
   perl: '5.006'
 configure_requires:
   ExtUtils::MakeMaker: '0'
+  perl: '5.006'
 dynamic_config: 0
-generated_by: 'Dist::Zilla version 5.020, CPAN::Meta::Converter version 2.142060'
+generated_by: 'Dist::Zilla version 5.027, CPAN::Meta::Converter version 2.143240'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -23,76 +24,86 @@ requires:
   Carp: '0'
   List::MoreUtils: '0'
   List::Util: '0'
+  List::Util::WeightedChoice: '0'
   perl: '5.006'
   strict: '0'
   warnings: '0'
 resources:
   bugtracker: https://rt.cpan.org/Public/Dist/Display.html?Name=Game-Theory-TwoPersonMatrix
   repository: git://github.com/ology/game-theory-twopersonmatrix.git
-version: '0.17'
+version: '0.18'
 x_Dist_Zilla:
   perl:
-    version: '5.021002'
+    version: '5.018001'
   plugins:
     -
       class: Dist::Zilla::Plugin::GatherDir
+      config:
+        Dist::Zilla::Plugin::GatherDir:
+          exclude_filename: []
+          exclude_match: []
+          follow_symlinks: '0'
+          include_dotfiles: '0'
+          prefix: ''
+          prune_directory: []
+          root: .
       name: '@Basic/GatherDir'
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::PruneCruft
       name: '@Basic/PruneCruft'
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::ManifestSkip
       name: '@Basic/ManifestSkip'
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::MetaYAML
       name: '@Basic/MetaYAML'
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::License
       name: '@Basic/License'
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::Readme
       name: '@Basic/Readme'
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::ExtraTests
       name: '@Basic/ExtraTests'
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::ExecDir
       name: '@Basic/ExecDir'
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::ShareDir
       name: '@Basic/ShareDir'
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::MakeMaker
       config:
         Dist::Zilla::Role::TestRunner:
           default_jobs: 1
       name: '@Basic/MakeMaker'
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::Manifest
       name: '@Basic/Manifest'
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::TestRelease
       name: '@Basic/TestRelease'
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::ConfirmRelease
       name: '@Basic/ConfirmRelease'
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::UploadToCPAN
       name: '@Basic/UploadToCPAN'
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::VersionFromModule
       name: VersionFromModule
@@ -100,27 +111,27 @@ x_Dist_Zilla:
     -
       class: Dist::Zilla::Plugin::MinimumPerl
       name: MinimumPerl
-      version: '1.003'
+      version: '1.006'
     -
       class: Dist::Zilla::Plugin::AutoPrereqs
       name: AutoPrereqs
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::CheckChangesHasContent
       name: CheckChangesHasContent
-      version: '0.006'
+      version: '0.007'
     -
       class: Dist::Zilla::Plugin::NextRelease
       name: NextRelease
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::Authority
       name: Authority
-      version: '1.006'
+      version: '1.009'
     -
       class: Dist::Zilla::Plugin::PkgVersion
       name: PkgVersion
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::PodWeaver
       config:
@@ -198,11 +209,11 @@ x_Dist_Zilla:
     -
       class: Dist::Zilla::Plugin::PodCoverageTests
       name: PodCoverageTests
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::PodSyntaxTests
       name: PodSyntaxTests
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::Test::NoTabs
       config:
@@ -230,19 +241,19 @@ x_Dist_Zilla:
             - ':ExecFiles'
           skips: []
       name: Test::Compile
-      version: '2.046'
+      version: '2.051'
     -
       class: Dist::Zilla::Plugin::TestRelease
       name: TestRelease
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::MetaConfig
       name: MetaConfig
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::MetaJSON
       name: MetaJSON
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::AutoMetaResources
       name: AutoMetaResources
@@ -254,38 +265,38 @@ x_Dist_Zilla:
     -
       class: Dist::Zilla::Plugin::FinderCode
       name: ':InstallModules'
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::FinderCode
       name: ':IncModules'
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::FinderCode
       name: ':TestFiles'
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::FinderCode
       name: ':ExecFiles'
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::FinderCode
       name: ':ShareFiles'
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::FinderCode
       name: ':MainModule'
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::FinderCode
       name: ':AllFiles'
-      version: '5.020'
+      version: '5.027'
     -
       class: Dist::Zilla::Plugin::FinderCode
       name: ':NoFiles'
-      version: '5.020'
+      version: '5.027'
   zilla:
     class: Dist::Zilla::Dist::Builder
     config:
       is_trial: '0'
-    version: '5.020'
+    version: '5.027'
 x_authority: cpan:GENE

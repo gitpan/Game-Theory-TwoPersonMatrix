@@ -146,6 +146,7 @@ is_deeply $g->mm_tally, {
     2 => { strategy => [0,1], value => 3 }
 }, 'mm_tally';
 
+# Prisoners' dilemma
 $g = Game::Theory::TwoPersonMatrix->new(
     payoff1 => [ [-5,-15],[0,-10] ],
     payoff2 => [ [-5,0],[-15,-10] ],
@@ -181,6 +182,22 @@ $g = Game::Theory::TwoPersonMatrix->new(
 isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
 is_deeply $g->nash, { "0,1" => [0,-1], "1,0" => [0,-1], "1,1" => [0,-1] }, 'nash';
 
+# Prisoners' dilemma
+$g = Game::Theory::TwoPersonMatrix->new(
+    payoff1 => [ [3,0],[5,1] ],
+    payoff2 => [ [3,5],[0,1] ],
+);
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
+is_deeply $g->nash, { "1,1" => [1,1] }, 'nash';
+
+# Battle of the sexes
+$g = Game::Theory::TwoPersonMatrix->new(
+    payoff1 => [ [1,0],[0,2] ],
+    payoff2 => [ [2,0],[0,1] ],
+);
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
+is_deeply $g->nash, { "0,0" => [1,2], "1,1" => [2,1] }, 'nash';
+
 $g = Game::Theory::TwoPersonMatrix->new(
     1 => { 1 => '0.2', 2 => '0.8' },
     2 => { 1 => '0.3', 2 => '0.7' },
@@ -208,5 +225,22 @@ $g = Game::Theory::TwoPersonMatrix->new(
 isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
 is_deeply $g->counter_strategy(1), [2.7, 1.2], 'player 1 counter_strategy';
 is_deeply $g->counter_strategy(2), [2.8, 3.4], 'player 2 counter_strategy';
+
+$g = Game::Theory::TwoPersonMatrix->new(
+    1 => { 1 => 0.5, 2 => 0.5 },
+    2 => { 1 => 0.5, 2 => 0.5 },
+    payoff => [ [1,2],[3,4] ],
+);
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
+like $g->play, qr/^\d$/, 'play';
+
+$g = Game::Theory::TwoPersonMatrix->new(
+    1 => { 1 => 0.5, 2 => 0.5 },
+    2 => { 1 => 0.5, 2 => 0.5 },
+    payoff1 => [ [0,1],[2,3] ],
+    payoff2 => [ [4,5],[6,7] ],
+);
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
+like $g->play, qr/^\d,\d$/, 'play';
 
 done_testing();

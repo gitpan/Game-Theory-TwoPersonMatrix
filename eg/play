@@ -1,0 +1,12 @@
+#!/usr/bin/env perl
+use Modern::Perl '2014';
+
+use Game::Theory::TwoPersonMatrix;
+
+# Battle of the sexes
+$g = Game::Theory::TwoPersonMatrix->new(
+    1 => { 1 => 0.5, 2 => 0.5 },
+    2 => { 1 => 0.5, 2 => 0.5 },
+    payoff1 => [ [1,0],[0,2] ],
+    payoff2 => [ [2,0],[0,1] ],
+);

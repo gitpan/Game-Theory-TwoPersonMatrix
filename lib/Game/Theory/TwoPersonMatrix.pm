@@ -1,7 +1,5 @@
 package Game::Theory::TwoPersonMatrix;
-BEGIN {
-  $Game::Theory::TwoPersonMatrix::AUTHORITY = 'cpan:GENE';
-}
+our $AUTHORITY = 'cpan:GENE';
 
 # ABSTRACT: Analyze a 2 person matrix game
 
@@ -13,8 +11,9 @@ use Algorithm::Combinatorics qw( permutations );
 use List::Util qw( max min );
 use List::MoreUtils qw( all zip );
 use Array::Transpose;
+use List::Util::WeightedChoice qw( choose_weighted );
 
-our $VERSION = '0.17';
+our $VERSION = '0.18';
 
 
 
@@ -441,6 +440,28 @@ sub nash
     return $nash;
 }
 
+
+sub play
+{
+    my ($self) = @_;
+
+    my ( $playi, $playj );
+
+    my $player  = 1;
+    my @keys    = sort { $a <=> $b } keys %{ $self->{$player} };
+    my $weights = [ map { $self->{$player}{$_} } @keys ];
+    $playi      = choose_weighted( \@keys, $weights );
+
+    $player  = 2;
+    @keys    = sort { $a <=> $b } keys %{ $self->{$player} };
+    $weights = [ map { $self->{$player}{$_} } @keys ];
+    $playj   = choose_weighted( \@keys, $weights );
+
+    return $self->{payoff}
+        ? $self->{payoff}[$playi - 1][$playj - 1]
+        : "$self->{payoff1}[$playi - 1][$playj - 1],$self->{payoff2}[$playi - 1][$playj - 1]";
+}
+
 1;
 
 __END__
@@ -455,7 +476,7 @@ Game::Theory::TwoPersonMatrix - Analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.17
+version 0.18
 
 =head1 SYNOPSIS
 
@@ -599,6 +620,10 @@ Identify the Nash equilibria in a non-zero-sum game.
 
 Given payoff pair C<(a,b)>, B<a> is maximum for its column and B<b> is maximum
 for its row.
+
+=head2 play
+
+Return a single outcome for a zero-sum game or a pair for a non-zero-sum game.
 
 =head1 SEE ALSO
 

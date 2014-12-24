@@ -67,7 +67,7 @@ $g = Game::Theory::TwoPersonMatrix->new(
                 [2, 3] ]
 );
 isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
-is $g->saddlepoint, 2, 'saddlepoint';
+is_deeply $g->saddlepoint, { '1,0' => 2 }, 'saddlepoint';
 
 $g = Game::Theory::TwoPersonMatrix->new(
     payoff => [ [ 9,-2,-5],
@@ -76,7 +76,23 @@ $g = Game::Theory::TwoPersonMatrix->new(
                 [-5, 0, 1] ]
 );
 isa_ok $g, 'Game::Theory::TwoPersonMatrix', '4x3';
-is $g->saddlepoint, 2, 'saddlepoint';
+is_deeply $g->saddlepoint, { '2,1' => 2 }, 'saddlepoint';
+
+$g = Game::Theory::TwoPersonMatrix->new(
+    payoff => [ [2,2],
+                [0,4],
+                [1,6],
+                [3,7] ]
+);
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '4x2';
+is_deeply $g->saddlepoint, { '3,0' => 3 }, 'saddlepoint';
+
+$g = Game::Theory::TwoPersonMatrix->new(
+    payoff => [ [4,6,4,12],
+                [-8,-9,3,2] ]
+);
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '4x2';
+is_deeply $g->saddlepoint, { '0,0' => 4, '0,2' => 4 }, 'saddlepoint';
 
 $g = Game::Theory::TwoPersonMatrix->new(
     payoff => [ [5,-2],

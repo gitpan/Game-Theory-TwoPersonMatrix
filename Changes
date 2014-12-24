@@ -1,5 +1,8 @@
 Revision history for Game-Theory-TwoPersonMatrix
 
+0.17  2014-12-24 09:15:11
+    - Allowed multiple saddlepoints to be found in non-symmetric games.
+
 0.16  2014-12-23 06:07:49
     - Enabled counter_strategy() computation for non-zero-sum games.
 

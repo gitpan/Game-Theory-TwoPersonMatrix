@@ -13,7 +13,7 @@ use List::MoreUtils qw( all zip );
 use Array::Transpose;
 use List::Util::WeightedChoice qw( choose_weighted );
 
-our $VERSION = '0.19';
+our $VERSION = '0.1901';
 
 
 
@@ -446,10 +446,7 @@ sub play
     my ( $self, $strategies ) = @_;
 
     # Allow for alternate strategies
-    for my $player ( keys %$strategies )
-    {
-        $self->{$player} = $strategies->{$player};
-    }
+    $self->{$_} = $strategies->{$_} for keys %$strategies;
 
     my ( $rplay, $cplay );
 
@@ -481,7 +478,7 @@ Game::Theory::TwoPersonMatrix - Analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.19
+version 0.1901
 
 =head1 SYNOPSIS
 
@@ -499,6 +496,7 @@ version 0.19
  $o = $g->oddments();
  $e = $g->expected_payoff();
  $c = $g->counter_strategy($player);
+ $u = $g->play();
 
  $g = Game::Theory::TwoPersonMatrix->new(
     1 => { 1 => 0.1, 2 => 0.2, 3 => 0.7 },
@@ -510,7 +508,7 @@ version 0.19
  $m = $g->pareto_optimal();
  $n = $g->nash();
  $e = $g->expected_payoff();
- $c = $g->counter_strategy($opponent);
+ $c = $g->counter_strategy($player);
  $u = $g->play();
 
 =head1 DESCRIPTION
@@ -635,7 +633,7 @@ for its row.
 Return a single outcome for a zero-sum game or a pair for a non-zero-sum game.
 
 An optional list of player strategies can be provided.  This is a hashref of the
-same strategies given to the constructor.
+same type of strategies that are given to the constructor.
 
 =head1 SEE ALSO
 

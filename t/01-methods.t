@@ -88,8 +88,7 @@ isa_ok $g, 'Game::Theory::TwoPersonMatrix', '4x2';
 is_deeply $g->saddlepoint, { '3,0' => 3 }, 'saddlepoint';
 
 $g = Game::Theory::TwoPersonMatrix->new(
-    payoff => [ [4,6,4,12],
-                [-8,-9,3,2] ]
+    payoff => [ [4,6,4,12], [-8,-9,3,2] ]
 );
 isa_ok $g, 'Game::Theory::TwoPersonMatrix', '4x2';
 is_deeply $g->saddlepoint, { '0,0' => 4, '0,2' => 4 }, 'saddlepoint';
@@ -140,7 +139,7 @@ $g = Game::Theory::TwoPersonMatrix->new(
     payoff1 => [ [2,3],[2,1] ],
     payoff2 => [ [3,5],[2,3] ],
 );
-isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2 non-zero-sum';
 is_deeply $g->mm_tally, {
     1 => { strategy => [1,0], value => 2 },
     2 => { strategy => [0,1], value => 3 }
@@ -151,35 +150,35 @@ $g = Game::Theory::TwoPersonMatrix->new(
     payoff1 => [ [-5,-15],[0,-10] ],
     payoff2 => [ [-5,0],[-15,-10] ],
 );
-isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2 non-zero-sum';
 is_deeply $g->pareto_optimal, { "0,0" => [-5,-5] }, 'pareto_optimal';
 
 $g = Game::Theory::TwoPersonMatrix->new(
     payoff1 => [ [2,3],[2,1] ],
     payoff2 => [ [3,5],[2,3] ],
 );
-isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2 non-zero-sum';
 is_deeply $g->pareto_optimal, { "0,0" => [2,3], "0,1" => [3,5] }, 'pareto_optimal';
 
 $g = Game::Theory::TwoPersonMatrix->new(
     payoff1 => [ [5,3,8,2],[6,5,7,1],[7,4,6,0] ],
     payoff2 => [ [2,0,1,3],[3,4,4,1],[5,6,8,2] ],
 );
-isa_ok $g, 'Game::Theory::TwoPersonMatrix', '4x3';
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '4x3 non-zero-sum';
 is_deeply $g->nash, { "0,3" => [2,3], "1,1" => [5,4] }, 'nash';
 
 $g = Game::Theory::TwoPersonMatrix->new(
     payoff1 => [ [2,1],[1,2] ],
     payoff2 => [ [1,2],[2,1] ],
 );
-isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2 non-zero-sum';
 is_deeply $g->nash, undef, 'nash';
 
 $g = Game::Theory::TwoPersonMatrix->new(
     payoff1 => [ [-1,0],[0,0] ],
     payoff2 => [ [-1,-1],[-1,-1] ],
 );
-isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2 non-zero-sum';
 is_deeply $g->nash, { "0,1" => [0,-1], "1,0" => [0,-1], "1,1" => [0,-1] }, 'nash';
 
 # Prisoners' dilemma
@@ -187,7 +186,7 @@ $g = Game::Theory::TwoPersonMatrix->new(
     payoff1 => [ [3,0],[5,1] ],
     payoff2 => [ [3,5],[0,1] ],
 );
-isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2 non-zero-sum';
 is_deeply $g->nash, { "1,1" => [1,1] }, 'nash';
 
 # Battle of the sexes
@@ -195,7 +194,7 @@ $g = Game::Theory::TwoPersonMatrix->new(
     payoff1 => [ [1,0],[0,2] ],
     payoff2 => [ [2,0],[0,1] ],
 );
-isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2 non-zero-sum';
 is_deeply $g->nash, { "0,0" => [1,2], "1,1" => [2,1] }, 'nash';
 
 $g = Game::Theory::TwoPersonMatrix->new(
@@ -204,7 +203,7 @@ $g = Game::Theory::TwoPersonMatrix->new(
     payoff1 => [ [5,0], [-1,2] ],
     payoff2 => [ [5,0], [-1,2] ],
 );
-isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2 non-zero-sum';
 is_deeply $g->expected_payoff(), [1.18, 1.18], 'expected_payoff';
 
 $g = Game::Theory::TwoPersonMatrix->new(
@@ -213,7 +212,7 @@ $g = Game::Theory::TwoPersonMatrix->new(
     payoff1 => [ [3,2],[0,4] ],
     payoff2 => [ [2,1],[3,4] ],
 );
-isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2 non-zero-sum';
 is_deeply $g->expected_payoff(), [2.4, 2.5], 'expected_payoff';
 
 $g = Game::Theory::TwoPersonMatrix->new(
@@ -222,7 +221,7 @@ $g = Game::Theory::TwoPersonMatrix->new(
     payoff1 => [ [3,2],[0,4] ],
     payoff2 => [ [2,1],[3,4] ],
 );
-isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2 non-zero-sum';
 is_deeply $g->counter_strategy(1), [2.7, 1.2], 'player 1 counter_strategy';
 is_deeply $g->counter_strategy(2), [2.8, 3.4], 'player 2 counter_strategy';
 
@@ -233,6 +232,7 @@ $g = Game::Theory::TwoPersonMatrix->new(
 );
 isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
 like $g->play, qr/^\d$/, 'play';
+is $g->play({ 1 => { 1 => 0, 2 => 1 }, 2 => { 1 => 0, 2 => 1 } }), 4, 'play alternate strategies';
 
 $g = Game::Theory::TwoPersonMatrix->new(
     1 => { 1 => 0.5, 2 => 0.5 },
@@ -240,7 +240,7 @@ $g = Game::Theory::TwoPersonMatrix->new(
     payoff1 => [ [0,1],[2,3] ],
     payoff2 => [ [4,5],[6,7] ],
 );
-isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
-like $g->play, qr/^\d,\d$/, 'play';
+isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2 non-zero-sum';
+is scalar(@{ $g->play }), 2, 'play';
 
 done_testing();

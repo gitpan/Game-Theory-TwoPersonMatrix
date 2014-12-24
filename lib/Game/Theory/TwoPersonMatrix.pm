@@ -13,7 +13,7 @@ use List::MoreUtils qw( all zip );
 use Array::Transpose;
 use List::Util::WeightedChoice qw( choose_weighted );
 
-our $VERSION = '0.18';
+our $VERSION = '0.19';
 
 
 
@@ -443,23 +443,28 @@ sub nash
 
 sub play
 {
-    my ($self) = @_;
+    my ( $self, $strategies ) = @_;
 
-    my ( $playi, $playj );
+    # Allow for alternate strategies
+    for my $player ( keys %$strategies )
+    {
+        $self->{$player} = $strategies->{$player};
+    }
+
+    my ( $rplay, $cplay );
 
     my $player  = 1;
-    my @keys    = sort { $a <=> $b } keys %{ $self->{$player} };
-    my $weights = [ map { $self->{$player}{$_} } @keys ];
-    $playi      = choose_weighted( \@keys, $weights );
+    my $keys    = [ sort { $a <=> $b } keys %{ $self->{$player} } ];
+    my $weights = [ map { $self->{$player}{$_} } @$keys ];
+    $rplay      = choose_weighted( $keys, $weights );
 
     $player  = 2;
-    @keys    = sort { $a <=> $b } keys %{ $self->{$player} };
-    $weights = [ map { $self->{$player}{$_} } @keys ];
-    $playj   = choose_weighted( \@keys, $weights );
+    $keys    = [ sort { $a <=> $b } keys %{ $self->{$player} } ];
+    $weights = [ map { $self->{$player}{$_} } @$keys ];
+    $cplay   = choose_weighted( $keys, $weights );
 
-    return $self->{payoff}
-        ? $self->{payoff}[$playi - 1][$playj - 1]
-        : "$self->{payoff1}[$playi - 1][$playj - 1],$self->{payoff2}[$playi - 1][$playj - 1]";
+    return $self->{payoff} ? $self->{payoff}[$rplay - 1][$cplay - 1]
+        : [ $self->{payoff1}[$rplay - 1][$cplay - 1], $self->{payoff2}[$rplay - 1][$cplay - 1] ];
 }
 
 1;
@@ -476,7 +481,7 @@ Game::Theory::TwoPersonMatrix - Analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.18
+version 0.19
 
 =head1 SYNOPSIS
 
@@ -506,6 +511,7 @@ version 0.18
  $n = $g->nash();
  $e = $g->expected_payoff();
  $c = $g->counter_strategy($opponent);
+ $u = $g->play();
 
 =head1 DESCRIPTION
 
@@ -623,7 +629,13 @@ for its row.
 
 =head2 play
 
+ $u = $g->play();
+ $u = $g->play(\%strategies);
+
 Return a single outcome for a zero-sum game or a pair for a non-zero-sum game.
+
+An optional list of player strategies can be provided.  This is a hashref of the
+same strategies given to the constructor.
 
 =head1 SEE ALSO
 

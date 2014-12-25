@@ -1,5 +1,7 @@
 package Game::Theory::TwoPersonMatrix;
-our $AUTHORITY = 'cpan:GENE';
+BEGIN {
+  $Game::Theory::TwoPersonMatrix::AUTHORITY = 'cpan:GENE';
+}
 
 # ABSTRACT: Analyze a 2 person matrix game
 
@@ -13,7 +15,7 @@ use List::MoreUtils qw( all zip );
 use Array::Transpose;
 use List::Util::WeightedChoice qw( choose_weighted );
 
-our $VERSION = '0.1901';
+our $VERSION = '0.1902';
 
 
 
@@ -445,23 +447,26 @@ sub play
 {
     my ( $self, $strategies ) = @_;
 
+    my $play;
+
     # Allow for alternate strategies
     $self->{$_} = $strategies->{$_} for keys %$strategies;
-
-    my ( $rplay, $cplay );
 
     my $player  = 1;
     my $keys    = [ sort { $a <=> $b } keys %{ $self->{$player} } ];
     my $weights = [ map { $self->{$player}{$_} } @$keys ];
-    $rplay      = choose_weighted( $keys, $weights );
+    my $rplay   = choose_weighted( $keys, $weights );
 
-    $player  = 2;
-    $keys    = [ sort { $a <=> $b } keys %{ $self->{$player} } ];
-    $weights = [ map { $self->{$player}{$_} } @$keys ];
-    $cplay   = choose_weighted( $keys, $weights );
+    $player   = 2;
+    $keys     = [ sort { $a <=> $b } keys %{ $self->{$player} } ];
+    $weights  = [ map { $self->{$player}{$_} } @$keys ];
+    my $cplay = choose_weighted( $keys, $weights );
 
-    return $self->{payoff} ? $self->{payoff}[$rplay - 1][$cplay - 1]
+    $play->{ "$rplay,$cplay" } = $self->{payoff}
+        ? $self->{payoff}[$rplay - 1][$cplay - 1]
         : [ $self->{payoff1}[$rplay - 1][$cplay - 1], $self->{payoff2}[$rplay - 1][$cplay - 1] ];
+
+    return $play;
 }
 
 1;
@@ -478,7 +483,7 @@ Game::Theory::TwoPersonMatrix - Analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.1901
+version 0.1902
 
 =head1 SYNOPSIS
 
@@ -547,8 +552,8 @@ Create a new C<Game::Theory::TwoPersonMatrix> object.
 
 Player strategies are given by a hash reference of numbered keys - one for each
 strategy.  Payoffs are given by array references of lists of outcomes.  For
-zero-sum games this is a single payoff array.  For non-zero-sum games this is
-given as two arrays - one for each player.
+zero-sum games this is a single payoff list.  For non-zero-sum games this is
+given as two lists - one for each player.
 
 =head2 expected_payoff()
 

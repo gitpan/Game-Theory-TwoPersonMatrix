@@ -231,16 +231,8 @@ $g = Game::Theory::TwoPersonMatrix->new(
     payoff => [ [1,2],[3,4] ],
 );
 isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
-like $g->play, qr/^\d$/, 'play';
-is $g->play({ 1 => { 1 => 0, 2 => 1 }, 2 => { 1 => 0, 2 => 1 } }), 4, 'play alternate strategies';
-
-$g = Game::Theory::TwoPersonMatrix->new(
-    1 => { 1 => 0.5, 2 => 0.5 },
-    2 => { 1 => 0.5, 2 => 0.5 },
-    payoff1 => [ [0,1],[2,3] ],
-    payoff2 => [ [4,5],[6,7] ],
-);
-isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2 non-zero-sum';
-is scalar(@{ $g->play }), 2, 'play';
+is ref($g->play), 'HASH', 'play';
+is_deeply $g->play({ 1 => { 1 => 0, 2 => 1 }, 2 => { 1 => 0, 2 => 1 } }),
+    { "2,2" => 4 }, 'play alternate strategies';
 
 done_testing();

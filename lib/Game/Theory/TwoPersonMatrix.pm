@@ -15,7 +15,7 @@ use List::MoreUtils qw( all zip );
 use Array::Transpose;
 use List::Util::WeightedChoice qw( choose_weighted );
 
-our $VERSION = '0.20';
+our $VERSION = '0.2001';
 
 
 
@@ -504,7 +504,7 @@ Game::Theory::TwoPersonMatrix - Analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.20
+version 0.2001
 
 =head1 SYNOPSIS
 
@@ -600,8 +600,8 @@ examples.
 
  $c = $g->counter_strategy($player);
 
-Return the counter-strategies for a given player of either a zero-sum or
-non-zero-sum game.
+Return the expected payoff, for a given player, of either a zero-sum or
+non-zero-sum game, given pure opponent strategies.
 
 =head2 saddlepoint()
 
@@ -609,11 +609,13 @@ non-zero-sum game.
 
 Return the saddlepoint of a zero-sum game, or C<undef> if there is none.
 
+A saddlepoint is simultaneously minimum for its row and maximum for its column.
+
 =head2 oddments()
 
  $o = $g->oddments();
 
-Return each player's "oddments" for a 2x2 zero-sum game.
+Return each player's "oddments" for a 2x2 zero-sum game with no saddlepoint.
 
 =head2 row_reduce()
 

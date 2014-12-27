@@ -122,10 +122,10 @@ isa_ok $g, 'Game::Theory::TwoPersonMatrix', '4x2';
 is_deeply $g->saddlepoint, { '0,0' => 4, '0,2' => 4 }, 'saddlepoint';
 
 $g = Game::Theory::TwoPersonMatrix->new(
-    payoff => [ [5,-2],
-                [1, 4] ]
+    payoff => [ [5,-2], [1, 4] ]
 );
 isa_ok $g, 'Game::Theory::TwoPersonMatrix', '2x2';
+is_deeply $g->saddlepoint, undef, 'saddlepoint';
 is_deeply $g->oddments, [ [ 0.3, 0.7 ], [ 0.6, 0.4 ] ], 'oddments';
 
 $g = Game::Theory::TwoPersonMatrix->new(

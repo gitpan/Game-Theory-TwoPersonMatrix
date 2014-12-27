@@ -4,21 +4,22 @@ use warnings;
 
 use Game::Theory::TwoPersonMatrix;
 
-my $n = shift || 8;
+my $n = shift || 100;
 
 my $g = Game::Theory::TwoPersonMatrix->new(
     1 => { 1 => '0.5', 2 => '0.5' },
     2 => { 1 => '0.5', 2 => '0.5' },
-#    payoff1 => [ [3,0],[5,1] ],
-#    payoff2 => [ [3,5],[0,1] ],
-    payoff1 => [ ['E','C'],['A','D'] ],
-    payoff2 => [ ['E','A'],['C','D'] ],
+    payoff1 => [ [3, 0], [5, 1] ],
+    payoff2 => [ [3, 5], [0, 1] ],
 );
 
-my $p;
+my ( $player, $opponent );
+
 for my $i ( 1 .. $n )
 {
-    push @$p, $g->play();
+    my $p = [ values %{ $g->play() } ]->[0];
+    $player   += $p->[0];
+    $opponent += $p->[1];
 }
 
-use Data::Dumper::Concise;warn Dumper$p;
+print "Player = $player, Opponent = $opponent\n";

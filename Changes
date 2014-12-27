@@ -1,5 +1,9 @@
 Revision history for Game-Theory-TwoPersonMatrix
 
+0.2001 2014-12-27 01:11:43
+    - Improved documentation.
+    - Added a simplistic play() simulation under eg/.
+
 0.20  2014-12-27 12:29:47
     - Allowed s_expected_value() to handle non-zero-sum payoffs.
 

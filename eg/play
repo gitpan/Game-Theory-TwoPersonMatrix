@@ -1,0 +1,24 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+use Game::Theory::TwoPersonMatrix;
+
+my $n = shift || 8;
+
+my $g = Game::Theory::TwoPersonMatrix->new(
+    1 => { 1 => '0.5', 2 => '0.5' },
+    2 => { 1 => '0.5', 2 => '0.5' },
+#    payoff1 => [ [3,0],[5,1] ],
+#    payoff2 => [ [3,5],[0,1] ],
+    payoff1 => [ ['E','C'],['A','D'] ],
+    payoff2 => [ ['E','A'],['C','D'] ],
+);
+
+my $p;
+for my $i ( 1 .. $n )
+{
+    push @$p, $g->play();
+}
+
+use Data::Dumper::Concise;warn Dumper$p;

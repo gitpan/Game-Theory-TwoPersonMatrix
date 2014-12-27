@@ -15,7 +15,7 @@ use List::MoreUtils qw( all zip );
 use Array::Transpose;
 use List::Util::WeightedChoice qw( choose_weighted );
 
-our $VERSION = '0.1903';
+our $VERSION = '0.20';
 
 
 
@@ -65,19 +65,40 @@ sub s_expected_payoff
 {
     my ($self) = @_;
 
-    my $expected_payoff = '';
+    my $expected_payoff;
     # For each strategy of player 1...
     for my $i ( sort { $a <=> $b } keys %{ $self->{1} } )
     {
         # For each strategy of player 2...
         for my $j ( sort { $a <=> $b } keys %{ $self->{2} } )
         {
-            # Expected value is the sum of the probabilities of each payoff
-            $expected_payoff .= " + $self->{1}{$i} * $self->{2}{$j} * $self->{payoff}[$i - 1][$j - 1]";
+            if ( $self->{payoff1} && $self->{payoff2} )
+            {
+                $expected_payoff->[0] .= " + $self->{1}{$i} * $self->{2}{$j} * $self->{payoff1}[$i - 1][$j - 1]";
+                $expected_payoff->[1] .= " + $self->{1}{$i} * $self->{2}{$j} * $self->{payoff2}[$i - 1][$j - 1]";
+            }
+            else {
+                # Expected value is the sum of the probabilities of each payoff
+                $expected_payoff .= " + $self->{1}{$i} * $self->{2}{$j} * $self->{payoff}[$i - 1][$j - 1]";
+            }
         }
     }
 
-    $expected_payoff =~ s/^ \+ (.+)$/$1/g;
+    my $deplus = sub
+    {
+        my ($string) = @_;
+        $string =~ s/^ \+ (.+)$/$1/;
+        return $string;
+    };
+
+    if ( $self->{payoff1} && $self->{payoff2} )
+    {
+        $expected_payoff->[0] = $deplus->($expected_payoff->[0]);
+        $expected_payoff->[1] = $deplus->($expected_payoff->[1]);
+    }
+    else {
+        $expected_payoff = $deplus->($expected_payoff);
+    }
 
     return $expected_payoff;
 }
@@ -483,7 +504,7 @@ Game::Theory::TwoPersonMatrix - Analyze a 2 person matrix game
 
 =head1 VERSION
 
-version 0.1903
+version 0.20
 
 =head1 SYNOPSIS
 
@@ -570,7 +591,7 @@ Return the expected payoff value of a game.
  );
  $s = $g->s_expected_payoff();
 
-Return the expected payoff expression for a non-numeric, zero-sum game.
+Return the expected payoff expression for a non-numeric game.
 
 Using real payoff values, we solve the resulting expression for p in the F<eg/>
 examples.

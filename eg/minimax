@@ -28,9 +28,9 @@ my $c2 = 0 * (1 - $q) * 1 + 0 * $q * -1 + 1 * (1 - $q) * -1 + 1 * $q * 1;
 print 'simplify: ', $c2->simplify, "\n";
 my $s = $c1 eq $c2;
 my $v = $s->solve($q);
-print 'maximin strategy: ', $v, "\n";
+print 'minimax strategy: ', $v, "\n";
 $s = $c2->sub( p => $v );
-print 'maximin expectation: ', $s, "\n";
+print 'minimax expectation: ', $s, "\n";
 
 print "Ex 2:\n";
 my $g = Game::Theory::TwoPersonMatrix->new(
@@ -51,7 +51,7 @@ my $c2 = 0 * (1 - $q) * 0.8 + 0 * $q * 1 + 1 * (1 - $q) * 0.9 + 1 * $q * 0.5;
 print 'simplify: ', $c2->simplify, "\n";
 my $s = $c1 eq $c2;
 my $v = $s->solve($q);
-print 'maximin strategy: ', $v, "\n";
+print 'minimax strategy: ', $v, "\n";
 $s = $c2->sub( p => $v );
-print 'maximin expectation: ', $s, "\n";
+print 'minimax expectation: ', $s, "\n";
 

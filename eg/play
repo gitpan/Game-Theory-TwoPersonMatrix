@@ -15,9 +15,9 @@ my $g = Game::Theory::TwoPersonMatrix->new(
 
 my ( $player, $opponent );
 
-for my $i ( 1 .. $n )
+for ( 1 .. $n )
 {
-    my $p = [ values %{ $g->play() } ]->[0];
+    my ($p) = values %{ $g->play() };
     $player   += $p->[0];
     $opponent += $p->[1];
 }

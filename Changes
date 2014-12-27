@@ -1,5 +1,8 @@
 Revision history for Game-Theory-TwoPersonMatrix
 
+0.2003 2014-12-27 01:40:21
+    - Fixed the syntax of eg/play.
+
 0.2002 2014-12-27 01:23:51
     - Fixed copy-pasta eg/minimax messages.
 
